@@ -120,8 +120,11 @@ and cleans up. The only two slash commands control intensity and show help:
 | `/capybara [low \| medium \| high \| off]` | Set the intensity, or turn it off. No argument = medium. |
 | `/capybara-help` | Quick reference card. |
 
-Commands load at session start, so **start a new session after installing.** The
-wizard-installed tools (Cursor, Copilot, OpenCode) get the same always-on rules.
+These are the only two — everything else is automatic. They're plugin skills, so
+they may appear namespaced as `/capybara:capybara` and `/capybara:capybara-help`
+in the menu. Skills load at session start, so **start a new session after
+installing.** The wizard-installed tools (Cursor, Copilot, OpenCode) get the same
+always-on rules.
 
 ## Develop & test locally
 

@@ -40,9 +40,11 @@ fs.rmSync(tmp, { recursive: true, force: true });
 // command parsing handles the namespaced form too
 assert.strictEqual(parseCommand('/capybara:capybara off'), 'off');
 
-// the two slash commands exist (these ARE the plugin's only commands)
-for (const c of ['capybara.toml', 'capybara-help.toml']) {
-  assert.ok(fs.existsSync(path.join(__dirname, '..', 'commands', c)), `missing command ${c}`);
+// the two slash skills exist (Claude Code surfaces skills, not commands/*.toml)
+for (const s of ['capybara', 'capybara-help']) {
+  const p = path.join(__dirname, '..', 'skills', s, 'SKILL.md');
+  assert.ok(fs.existsSync(p), `missing skill ${s}`);
+  assert.ok(fs.readFileSync(p, 'utf8').startsWith('---'), `skill ${s} needs frontmatter`);
 }
 
 // SubagentStart MUST be JSON-wrapped or Claude Code drops the context
