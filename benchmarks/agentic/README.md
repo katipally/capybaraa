@@ -20,11 +20,18 @@ This benchmark measures the behavior. Every cell is a **real headless Claude Cod
 
 ## Arms
 
-`baseline` (no plugin) · `capybaraa` (the plugin, level **high**, via `--plugin-dir`) ·
-`concise` (a one-line "be concise, build the minimal thing" system prompt).
+Three kinds: `bare` (the unaided agent), `plugin` (a real SessionStart-hook plugin loaded via
+`--plugin-dir`), and `prompt` (a system-prompt instruction). Available:
 
-The `concise` arm is the honest control: if a seven-word instruction matches the plugin, the
-benchmark should show it.
+`baseline` / `regular` (bare) · `capybaraa` (plugin, level **high**) · `ponytail` (plugin,
+level **full**, from the installed ponytail plugin) · `caveman` (prompt, ponytail's caveman
+skill) · `yagni` · `yagni-oneliner` · `concise` (prompt).
+
+Pick with `--arms baseline,capybaraa,ponytail,caveman,yagni-oneliner`. The prompt arms are
+honest controls: if a one-line instruction matches the plugin, the benchmark should show it.
+plugin arms other than capybaraa resolve from `~/.claude/plugins/cache/<name>/` (override with
+`<NAME>_PLUGIN_DIR`); a missing one is reported, not silently skipped. A ponytail-style
+head-to-head of all five is in [`../results/2026-06-25-multiarm-haiku.md`](../results/2026-06-25-multiarm-haiku.md).
 
 ## Isolation (why the baseline is trustworthy)
 
