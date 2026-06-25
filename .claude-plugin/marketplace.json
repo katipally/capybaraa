@@ -7,7 +7,7 @@
     {
       "name": "capybara",
       "description": "Six pillars (clarify, lean, optimal, economy, complete, hygiene) injected proportionally, plus /capybara:plan, /capybara:review, /capybara:clean, /capybara:done.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "development",
       "keywords": ["planning", "yagni", "minimalism", "code-quality"],
       "source": "./"
