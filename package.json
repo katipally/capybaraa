@@ -1,8 +1,8 @@
 {
   "name": "capybaraa",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": true,
-  "description": "Calm senior-dev mode for Claude Code: clarify before code (plan mode with curated ASCII questions and edge cases), stay lean, optimal, terse, finish terminally, leave the repo clean.",
+  "description": "Calm senior-dev mode for Claude Code: clarify before code (curated ASCII questions and edge cases), stay lean, optimal, terse, finish terminally, leave the repo clean.",
   "scripts": {
     "test": "node test/smoke.js",
     "validate": "claude plugin validate ."

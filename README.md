@@ -1,4 +1,8 @@
-<h1 align="center">🦫 Capybaraa</h1>
+<p align="center">
+  <img src="assets/capybara_nobg.png" width="200" alt="Capybaraa">
+</p>
+
+<h1 align="center">Capybaraa</h1>
 
 <p align="center">
   <em>The chillest senior dev in the swamp. Doesn't panic, doesn't over-build. Asks first, ships clean, leaves.</em>
@@ -20,7 +24,7 @@ It's the half of "good engineering" that agents skip: think before you type, the
 
 You ask for "add a settings page." A stock agent invents a `SettingsManager`, a `ConfigProvider`, three new files, a migration, and starts coding before it knows what settings you even mean.
 
-With capybaraa it drops into plan mode first:
+With capybaraa it clarifies before it writes code:
 
 ```
 🦫 a couple of questions before I touch code:
@@ -41,13 +45,13 @@ Then it writes the smallest thing that answers your actual answers, and runs the
 ## The six pillars
 
 > **The capybaraa way:** understand the prompt, gather real context, learn the
-> codebase, explore the actual flow. For anything past a trivial ask, drop into
-> plan mode, ask the curated questions you need (ASCII on the options), then write
-> the real root-cause fix. Never patchwork.
+> codebase, explore the actual flow. For anything past a trivial ask, clarify
+> before coding: ask the curated questions you need (ASCII on the options), then
+> write the real root-cause fix. Never patchwork.
 
 | Pillar | What it enforces |
 |--------|------------------|
-| **CLARIFY** | Understand and explore first, then for non-trivial work use plan mode: as many curated questions as the task actually needs (one or a dozen, never a fixed quota), a small ASCII sketch on the options, explicit edge cases. Don't guess the spec. |
+| **CLARIFY** | Understand and explore first, then for non-trivial work clarify before coding: as many curated questions as the task actually needs (one or a dozen, never a fixed quota), a small ASCII sketch on the options, explicit edge cases. Don't guess the spec. |
 | **LEAN** | The YAGNI ladder: does it need to exist? reuse what's here? stdlib? native? one line? then minimal code. |
 | **OPTIMAL** | Right data structure, best feasible time and space, no needless O(n²). |
 | **ECONOMY** | Terse output, no useless comments or filler, minimal tokens, no over-exploring. |
@@ -64,11 +68,11 @@ It's proportional, on purpose:
 
 ```
  ALWAYS-ON  the 6 pillars as terse rules. prompt-cached, ~free per turn.
- PLAN MODE  the clarify-with-ASCII questions and the run-the-check done-gate
+ ON DEMAND  the clarify-with-ASCII questions and the run-the-check done-gate
             kick in only when the task is big enough to earn them.
 ```
 
-A one-line fix gets the rules and nothing else: no ceremony, no token burst. A real feature gets the full treatment through Claude Code's plan mode.
+A one-line fix gets the rules and nothing else: no ceremony, no token burst. A real feature gets the full treatment: the agent clarifies before it writes code, and plan mode is the ideal place for that when you're in it.
 
 ## Does it actually help? (numbers)
 
@@ -101,7 +105,7 @@ Capybaraa is a native Claude Code plugin, installed from this repo:
 ```
 
 | `low` | nudges only: build it, name the leaner option in one line |
-| `medium` *(default)* | all pillars, proportional; plan mode when the task warrants it |
+| `medium` *(default)* | all pillars, proportional; clarify before code when the task warrants it |
 | `high` | aggressive: max questioning, deletion first, strict done-gate |
 
 The level shows in your statusline as `[CAPYBARAA]` or `[CAPYBARAA:HIGH]`. Set a default for every session with `CAPYBARAA_DEFAULT_LEVEL` (`low`/`medium`/`high`/`off`) or `defaultLevel` in `~/.config/capybaraa/config.json`. Default is `medium`.
@@ -114,6 +118,7 @@ The six pillars are always on, there's no command to run them. Once installed, c
 |---------|--------------|
 | `/capybaraa [low \| medium \| high \| off]` | Set the intensity, or turn it off. No argument means medium. |
 | `/capybaraa-review` | Review the current diff against the six pillars. Lists findings, doesn't edit. |
+| `/capybaraa-audit` | Scan the whole repo against the six pillars. Ranked findings, doesn't edit. |
 | `/capybaraa-help` | Quick reference card. |
 
 They're plugin skills, so they may show up namespaced as `/capybaraa:capybaraa` in the menu. Skills load at session start, so start a new session after installing.

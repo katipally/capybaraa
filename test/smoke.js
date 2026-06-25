@@ -13,6 +13,8 @@ assert.strictEqual(getInstructions('off'), '', 'off => empty');
 assert.match(getInstructions('medium'), /level: medium/);
 assert.match(getInstructions('bogus'), /level: medium/, 'unknown level => default');
 assert.match(getInstructions('medium'), /2\. LEAN/, 'all six pillars ship');
+assert.doesNotMatch(getInstructions('medium'), /drop into plan mode/i, 'plan-mode wording reframed to behavior');
+assert.match(getInstructions('medium'), /references\/principles\.md/, 'CORE points at the detailed reference');
 
 // command parsing
 assert.strictEqual(parseCommand('please /capybaraa high'), 'high');
@@ -25,11 +27,17 @@ assert.ok(!isDeactivation('keep going'));
 // command parsing handles the namespaced form too
 assert.strictEqual(parseCommand('/capybaraa:capybaraa off'), 'off');
 
-// the three slash skills exist (Claude Code surfaces skills, not commands/*.toml)
-for (const s of ['capybaraa', 'capybaraa-help', 'capybaraa-review']) {
+// the slash skills exist (Claude Code surfaces skills, not commands/*.toml)
+for (const s of ['capybaraa', 'capybaraa-help', 'capybaraa-review', 'capybaraa-audit']) {
   const p = path.join(__dirname, '..', 'skills', s, 'SKILL.md');
   assert.ok(fs.existsSync(p), `missing skill ${s}`);
   assert.ok(fs.readFileSync(p, 'utf8').startsWith('---'), `skill ${s} needs frontmatter`);
+}
+
+// the detailed reference exists and names all six pillars
+const ref = fs.readFileSync(path.join(__dirname, '..', 'references', 'principles.md'), 'utf8');
+for (const pillar of ['CLARIFY', 'LEAN', 'OPTIMAL', 'ECONOMY', 'COMPLETE', 'HYGIENE']) {
+  assert.match(ref, new RegExp(`## ${pillar}`), `reference missing ${pillar}`);
 }
 
 // SubagentStart MUST be JSON-wrapped or Claude Code drops the context

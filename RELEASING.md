@@ -1,6 +1,6 @@
 # Releasing
 
-capybaraa is a Claude Code plugin, distributed straight from this GitHub repo —
+capybaraa is a Claude Code plugin, distributed straight from this GitHub repo:
 no npm, no registry. Users install it with `/plugin marketplace add
 katipally/capybaraa`, and the marketplace pin follows `ref:"main"` in
 `.claude-plugin/marketplace.json`. So **a release is just a push to `main`.**
@@ -36,12 +36,12 @@ git push origin vX.Y.Z
 gh release create vX.Y.Z --title vX.Y.Z --generate-notes
 ```
 
-Tags are cosmetic here — they don't change what marketplace users receive (that's
+Tags are cosmetic here. They don't change what marketplace users receive (that's
 driven by `ref:"main"`).
 
 ## Optional: official Claude Code marketplace
 
-Listing in the community catalog adds discovery, not capability — direct repo
+Listing in the community catalog adds discovery, not capability: direct repo
 install already works. Validate, then submit:
 
 ```bash
@@ -53,4 +53,4 @@ claude plugin validate . --strict
 - Org owners → <https://claude.ai/admin-settings/directory/submissions/plugins/new>
 
 Approved plugins are pinned to a commit SHA in `anthropics/claude-plugins-community`
-and synced nightly. Allow ~1–2 days.
+and synced nightly. Allow 1 to 2 days.

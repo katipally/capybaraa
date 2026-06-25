@@ -13,8 +13,8 @@ Render this card, change nothing.
  capybaraa: calm senior-dev mode.
  the six pillars are ALWAYS ON; they apply to every task. no command needed.
 
- PILLARS  CLARIFY  explore first, then plan mode: curated questions + ASCII
-                   on the options + edge cases, before non-trivial code
+ PILLARS  CLARIFY  explore first, then clarify before coding: curated
+                   questions + ASCII on the options + edge cases
           LEAN     YAGNI · reuse · stdlib first
           OPTIMAL  right data structure · best feasible complexity
           ECONOMY  terse · no useless comments · minimal tokens
@@ -23,8 +23,11 @@ Render this card, change nothing.
                    sanitize · flag security
 
  SLASH    /capybaraa [low|medium|high|off]   set intensity
-          /capybaraa-review                  review a diff against the pillars
+          /capybaraa-review                  review the diff against the pillars
+          /capybaraa-audit                   scan the whole repo against the pillars
           /capybaraa-help                    this card
+
+ DETAIL   full per-pillar guidance: references/principles.md
 
  LEVELS   low = nudges · medium = default · high = aggressive
  OFF      "stop capybaraa"  or  /capybaraa off

@@ -15,7 +15,10 @@ license: MIT
 Review the current change (the staged/unstaged diff, or the files the user names)
 against the six pillars. This is a quality pass, not a correctness audit: it hunts
 the things a calm senior dev would flag in review, not runtime bugs. For correctness
-bugs use `/code-review`.
+bugs use `/code-review`. To scan the whole repo instead of the diff, use
+`/capybaraa-audit`.
+
+Detailed guidance on each pillar: [`references/principles.md`](../../references/principles.md).
 
 ## How to run it
 

@@ -25,7 +25,7 @@ function getLevel() {
     const cfg = path.join(os.homedir(), '.config', 'capybaraa', 'config.json');
     const v = JSON.parse(fs.readFileSync(cfg, 'utf8')).defaultLevel;
     if (VALID_LEVELS.includes(v)) return v;
-  } catch {}
+  } catch {} // missing or malformed config: deliberately fall through to the default, never crash the hook
   return DEFAULT_LEVEL;
 }
 

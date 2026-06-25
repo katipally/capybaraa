@@ -3,12 +3,29 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [0.2.3] - 2026-06-25
+
+- **Reframed "plan mode" to behavior.** The injected principles, skills, help card,
+  and README no longer tell the agent to "drop into plan mode" (a user-controlled mode
+  it cannot reliably self-enter). They now say "clarify before you code" and note plan
+  mode as the ideal venue when the user is in it.
+- **Two-layer detail.** Added [`references/principles.md`](references/principles.md):
+  per-pillar worked examples, situation rules, edge cases, and do/don't tables. The
+  injected CORE stays terse and points at it on demand, so adherence improves without
+  taxing every session.
+- **New `/capybaraa-audit` skill.** Whole-repo scan against the six pillars (the
+  diff-only `/capybaraa-review` has a repo-wide counterpart now). Lists findings ranked
+  by impact, does not edit.
+- **Logo.** README now leads with `assets/capybara_nobg.png` instead of an emoji.
+- **Removed stray em-dashes** from the docs, honoring the project's own plain-language
+  rule.
+
 ## [0.2.2] - 2026-06-25
 
 - **Claude Code only.** Dropped Cursor / Copilot / OpenCode support and the npm
   CLI that installed them (`bin/`, `installer/`). Those tools have no hook or
   skill system, so they only ever got static rules text; the project is now a
-  focused native plugin. Removed the npm publish workflow — releases ship from
+  focused native plugin. Removed the npm publish workflow, releases ship from
   this repo via the marketplace pin. See [RELEASING.md](RELEASING.md).
 
 ## [0.2.1] - 2026-06-25
