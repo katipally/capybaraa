@@ -1,0 +1,28 @@
+name: Publish to npm
+
+# Publishes on a version tag, e.g.  git tag v0.1.0 && git push origin v0.1.0
+#
+# ONE-TIME SETUP (no secrets needed — OIDC trusted publishing):
+#   1. npm: account → Packages → @katipally/capybara → Settings → Trusted Publisher
+#      Add GitHub Actions: repo katipally/capybara, workflow publish.yml.
+#   2. That's it. The job below mints a short-lived token via OIDC at publish time.
+# Requires npm >= 11.5.1 (provided by Node 22 / setup-node). See PUBLISHING.md.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required for OIDC trusted publishing + provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/
+      - run: npm test
+      - run: npm publish --provenance --access public

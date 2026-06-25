@@ -38,7 +38,7 @@ async function runWizard(root) {
       stdout.write(c('38;5;203', '  ✗ ') + `${b.name}: ${e.message}\n`);
     }
   }
-  stdout.write(c('90', '\nRun "npx capybara doctor" to verify, "npx capybara update" to refresh.\n'));
+  stdout.write(c('90', '\nRun "capybara doctor" to verify, "capybara update" to refresh.\n'));
 }
 
 module.exports = { runWizard };

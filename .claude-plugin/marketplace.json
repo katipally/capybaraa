@@ -1,7 +1,7 @@
 {
   "name": "capybara",
   "description": "Calm senior-dev coding principles + a clarify-before-code planning engine.",
-  "owner": { "name": "Yashwanth Reddy" },
+  "owner": { "name": "Yashwanth Reddy", "url": "https://github.com/katipally" },
   "plugins": [
     {
       "name": "capybara",
@@ -9,7 +9,7 @@
       "version": "0.1.0",
       "category": "development",
       "keywords": ["planning", "yagni", "minimalism", "code-quality"],
-      "source": { "source": "git-subdir", "url": "https://github.com/yashwanth/capybara.git", "path": ".", "ref": "main" }
+      "source": { "source": "git-subdir", "url": "https://github.com/katipally/capybara.git", "path": ".", "ref": "main" }
     }
   ]
 }
