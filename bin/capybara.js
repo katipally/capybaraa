@@ -32,18 +32,29 @@ function update() {
   stdout.write(n ? '\n' : c('90', '  nothing installed here yet — run "npx capybara init".\n\n'));
 }
 
+function uninstall() {
+  stdout.write(c('1', '\ncapybara uninstall') + '\n\n');
+  let n = 0;
+  for (const b of BRIDGES) {
+    const removed = b.remove(root);
+    if (removed) { stdout.write(c('90', '  − ') + `${b.name} removed (${removed})\n`); n++; }
+  }
+  stdout.write(n ? '\n' : c('90', '  nothing to remove here.\n\n'));
+}
+
 function help() {
   stdout.write(`
 🦫 ${c('1;38;5;179', 'capybara')} — calm senior-dev principles for AI coding agents
 
-  ${c('1', 'npx capybara init')}     detect your tools and install the bridges (this project)
-  ${c('1', 'npx capybara doctor')}   show what's installed where
-  ${c('1', 'npx capybara update')}   refresh installed bridges to the latest text
-  ${c('1', 'npx capybara help')}     this
+  ${c('1', 'npx capybara init')}       detect your tools and install the bridges (this project)
+  ${c('1', 'npx capybara doctor')}     show what's installed where
+  ${c('1', 'npx capybara update')}     refresh installed bridges to the latest text
+  ${c('1', 'npx capybara uninstall')}  remove capybara from this project's tool files
+  ${c('1', 'npx capybara help')}       this
 
 Claude Code users: prefer the native plugin — /plugin install capybara@capybara
 `);
 }
 
 const cmd = (process.argv[2] || 'help').toLowerCase();
-({ init: () => runWizard(root), doctor, update, help }[cmd] || help)();
+({ init: () => runWizard(root), doctor, update, uninstall, help }[cmd] || help)();
