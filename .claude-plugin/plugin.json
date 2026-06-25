@@ -1,0 +1,8 @@
+{
+  "name": "capybara",
+  "version": "0.1.0",
+  "description": "Calm senior-dev mode for AI coding agents: clarify before code (ASCII plans + questions + edge cases), stay lean, write optimal code, spend tokens proportionally, finish terminally, leave the repo clean. Funny name, professional work.",
+  "author": { "name": "Yashwanth Reddy" },
+  "license": "MIT",
+  "hooks": "./hooks/claude-hooks.json"
+}
