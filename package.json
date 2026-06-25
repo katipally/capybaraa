@@ -1,0 +1,11 @@
+{
+  "name": "capybara",
+  "version": "0.1.0",
+  "description": "Calm senior-dev mode for AI coding agents: clarify before code (ASCII plans + questions + edge cases), stay lean, optimal, terse, finish terminally, leave the repo clean. Installs into Claude Code, Cursor, Copilot, and OpenCode.",
+  "bin": { "capybara": "bin/capybara.js" },
+  "scripts": { "test": "node test/smoke.js" },
+  "keywords": ["ai", "claude-code", "cursor", "copilot", "opencode", "plugin", "planning", "yagni"],
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "files": ["bin", "installer", "principles", "skills", "agents", "hooks", "output-styles", ".claude-plugin", "README.md"]
+}
