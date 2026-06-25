@@ -5,7 +5,7 @@ Thanks for helping keep the swamp calm.
 ## Setup
 
 ```bash
-git clone https://github.com/katipally/capybara && cd capybara
+git clone https://github.com/katipally/capybaraa && cd capybaraa
 node test/smoke.js          # no dependencies to install, stdlib only
 ```
 
@@ -16,7 +16,7 @@ node test/smoke.js          # must pass
 claude plugin validate .    # if you have the Claude Code CLI
 ```
 
-## Ground rules (capybara eats its own cooking)
+## Ground rules (capybaraa eats its own cooking)
 
 - **Single source of truth.** The principle text lives once in
   `principles/build-instructions.js`. Don't copy it into bridges or skills,

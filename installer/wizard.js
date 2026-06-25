@@ -8,7 +8,7 @@ const { BRIDGES } = require('./bridges.js');
 const c = (n, s) => `\x1b[${n}m${s}\x1b[0m`;
 
 async function runWizard(root) {
-  stdout.write(c('1;38;5;179', '\n🦫 capybara init') + '  installing principles into your tools\n\n');
+  stdout.write(c('1;38;5;179', '\n🦫 capybaraa init') + '  installing principles into your tools\n\n');
 
   const detected = BRIDGES.map((b) => ({ b, on: b.detect() }));
   detected.forEach(({ b, on }, i) => {
@@ -38,7 +38,7 @@ async function runWizard(root) {
       stdout.write(c('38;5;203', '  ✗ ') + `${b.name}: ${e.message}\n`);
     }
   }
-  stdout.write(c('90', '\nRun "capybara doctor" to verify, "capybara update" to refresh.\n'));
+  stdout.write(c('90', '\nRun "capybaraa doctor" to verify, "capybaraa update" to refresh.\n'));
 }
 
 module.exports = { runWizard };

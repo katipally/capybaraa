@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Summarize a promptfoo run into a capybara-vs-baseline table: median lines of code,
-// pass rate, median cost, median latency, and the capybara reduction.
+// Summarize a promptfoo run into a capybaraa-vs-baseline table: median lines of code,
+// pass rate, median cost, median latency, and the capybaraa reduction.
 //
 //   node score.js results/latest.json
 'use strict';
@@ -44,7 +44,7 @@ for (const r of rows) {
 }
 
 const fmt = (x, d = 2) => (x == null ? '  -  ' : x.toFixed(d));
-console.log('\ncapybara benchmark  (medians across all tasks, providers, repeats)\n');
+console.log('\ncapybaraa benchmark  (medians across all tasks, providers, repeats)\n');
 console.log('variant    runs  pass%   loc   cost($)   latency(ms)');
 console.log('-------------------------------------------------------');
 const sum = {};
@@ -56,12 +56,12 @@ for (const [label, g] of groups) {
   );
 }
 
-if (sum.baseline && sum.capybara) {
+if (sum.baseline && sum.capybaraa) {
   const drop = (a, b) => (a && b ? `${(((a - b) / a) * 100).toFixed(0)}%` : '-');
-  console.log('\ncapybara vs baseline:');
-  console.log(`  lines    ${drop(sum.baseline.loc, sum.capybara.loc)} fewer`);
-  console.log(`  cost     ${drop(sum.baseline.cost, sum.capybara.cost)} cheaper`);
-  console.log(`  latency  ${drop(sum.baseline.lat, sum.capybara.lat)} faster`);
-  console.log(`  safety   baseline ${sum.baseline.passPct.toFixed(0)}% correct, capybara ${sum.capybara.passPct.toFixed(0)}% correct`);
+  console.log('\ncapybaraa vs baseline:');
+  console.log(`  lines    ${drop(sum.baseline.loc, sum.capybaraa.loc)} fewer`);
+  console.log(`  cost     ${drop(sum.baseline.cost, sum.capybaraa.cost)} cheaper`);
+  console.log(`  latency  ${drop(sum.baseline.lat, sum.capybaraa.lat)} faster`);
+  console.log(`  safety   baseline ${sum.baseline.passPct.toFixed(0)}% correct, capybaraa ${sum.capybaraa.passPct.toFixed(0)}% correct`);
 }
 console.log('');

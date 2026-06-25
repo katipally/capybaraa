@@ -1,8 +1,8 @@
 {
-  "name": "@katipally/capybara",
-  "version": "0.2.0",
+  "name": "capybaraa",
+  "version": "0.2.1",
   "description": "Calm senior-dev mode for AI coding agents: clarify before code (plan mode with curated ASCII questions and edge cases), stay lean, optimal, terse, finish terminally, leave the repo clean. Installs into Claude Code, Cursor, Copilot, and OpenCode.",
-  "bin": { "capybara": "bin/capybara.js" },
+  "bin": { "capybaraa": "bin/capybaraa.js" },
   "scripts": {
     "test": "node test/smoke.js",
     "validate": "claude plugin validate .",
@@ -11,9 +11,9 @@
   "keywords": ["ai", "claude-code", "cursor", "copilot", "opencode", "plugin", "planning", "yagni", "minimalism"],
   "license": "MIT",
   "author": "Yashwanth Reddy",
-  "homepage": "https://github.com/katipally/capybara#readme",
-  "repository": { "type": "git", "url": "git+https://github.com/katipally/capybara.git" },
-  "bugs": { "url": "https://github.com/katipally/capybara/issues" },
+  "homepage": "https://github.com/katipally/capybaraa#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/katipally/capybaraa.git" },
+  "bugs": { "url": "https://github.com/katipally/capybaraa/issues" },
   "engines": { "node": ">=18" },
   "publishConfig": { "access": "public" },
   "files": ["bin", "installer", "principles", "skills", "hooks", ".claude-plugin", "LICENSE", "README.md"]

@@ -1,5 +1,5 @@
 // Per-platform bridges. One table, not four files. Each bridge detects its tool
-// and writes the capybara principles into that tool's conventional rules file.
+// and writes the capybaraa principles into that tool's conventional rules file.
 'use strict';
 
 const fs = require('fs');
@@ -13,8 +13,8 @@ const exists = (p) => { try { return fs.existsSync(p); } catch { return false; }
 // Every bridge carries the full principle text at the default level.
 const TEXT = () => getInstructions('medium');
 
-const START = '<!-- capybara:start -->';
-const END = '<!-- capybara:end -->';
+const START = '<!-- capybaraa:start -->';
+const END = '<!-- capybaraa:end -->';
 
 // Write/refresh a delimited block so update is idempotent and uninstall is clean.
 function writeBlock(file, body) {
@@ -42,7 +42,7 @@ function removeBlock(file) {
 // Cursor uses a dedicated .mdc rule file with its own frontmatter, own it whole.
 function writeMdc(file) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const content = `---\ndescription: Capybara, calm senior-dev coding principles\nalwaysApply: true\n---\n\n${TEXT()}\n`;
+  const content = `---\ndescription: Capybaraa, calm senior-dev coding principles\nalwaysApply: true\n---\n\n${TEXT()}\n`;
   fs.writeFileSync(file, content);
   return file;
 }
@@ -54,14 +54,14 @@ const BRIDGES = [
     target: (root) => path.join(root, 'CLAUDE.md'),
     install: (root) => writeBlock(path.join(root, 'CLAUDE.md'), TEXT()),
     remove: (root) => removeBlock(path.join(root, 'CLAUDE.md')),
-    note: 'for full integration prefer the plugin: /plugin install capybara@capybara',
+    note: 'for full integration prefer the plugin: /plugin install capybaraa@capybaraa',
   },
   {
     id: 'cursor', name: 'Cursor',
     detect: () => exists(path.join(HOME, '.cursor')),
-    target: (root) => path.join(root, '.cursor', 'rules', 'capybara.mdc'),
-    install: (root) => writeMdc(path.join(root, '.cursor', 'rules', 'capybara.mdc')),
-    remove: (root) => { const f = path.join(root, '.cursor', 'rules', 'capybara.mdc'); if (exists(f)) { fs.unlinkSync(f); return f; } return null; },
+    target: (root) => path.join(root, '.cursor', 'rules', 'capybaraa.mdc'),
+    install: (root) => writeMdc(path.join(root, '.cursor', 'rules', 'capybaraa.mdc')),
+    remove: (root) => { const f = path.join(root, '.cursor', 'rules', 'capybaraa.mdc'); if (exists(f)) { fs.unlinkSync(f); return f; } return null; },
   },
   {
     id: 'copilot', name: 'GitHub Copilot',

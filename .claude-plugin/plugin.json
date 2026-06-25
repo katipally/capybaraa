@@ -1,10 +1,10 @@
 {
-  "name": "capybara",
-  "version": "0.2.0",
+  "name": "capybaraa",
+  "version": "0.2.1",
   "description": "Calm senior-dev mode for AI coding agents: clarify before code (plan mode with curated ASCII questions and edge cases), stay lean, write optimal code, spend tokens proportionally, finish terminally, leave the repo clean.",
   "author": { "name": "Yashwanth Reddy" },
-  "homepage": "https://github.com/katipally/capybara",
-  "repository": "https://github.com/katipally/capybara",
+  "homepage": "https://github.com/katipally/capybaraa",
+  "repository": "https://github.com/katipally/capybaraa",
   "license": "MIT",
   "hooks": "./hooks/claude-hooks.json"
 }

@@ -10,12 +10,12 @@
 | variant  | runs | pass% | loc | cost($) | latency(ms) |
 |----------|------|-------|-----|---------|-------------|
 | baseline |      |       |     |         |             |
-| capybara |      |       |     |         |             |
+| capybaraa |      |       |     |         |             |
 
-**capybara vs baseline:** __% fewer lines, __% cheaper, __% faster. Correctness:
-baseline __%, capybara __%.
+**capybaraa vs baseline:** __% fewer lines, __% cheaper, __% faster. Correctness:
+baseline __%, capybaraa __%.
 
 ## Notes
 
-What surprised you, which tasks drove the gap, any task where capybara lost or broke
+What surprised you, which tasks drove the gap, any task where capybaraa lost or broke
 correctness. Be honest, a regression here is worth more than a clean chart.

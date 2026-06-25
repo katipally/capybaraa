@@ -1,11 +1,11 @@
 ---
-name: capybara
-description: Set capybara intensity (low / medium / high / off) or explain what capybara mode is. Use when the user types /capybara, says "capybara mode", picks a level, or asks what capybara does.
+name: capybaraa
+description: Set capybaraa intensity (low / medium / high / off) or explain what capybaraa mode is. Use when the user types /capybaraa, says "capybaraa mode", picks a level, or asks what capybaraa does.
 argument-hint: "[low|medium|high|off]"
 license: MIT
 ---
 
-# Capybara
+# Capybaraa
 
 Calm senior-dev mode. The six pillars are **always on** (injected every session) and
 apply to every task automatically, no command needed:
@@ -25,7 +25,7 @@ complexity) · **ECONOMY** (terse, no useless comments, minimal tokens) ·
 
 When invoked with a level argument, the UserPromptSubmit hook persists it, so just
 acknowledge the new level in one line. With no argument, show this table and the
-current level. "stop capybara" / "normal mode" / `/capybara off` turns it off.
+current level. "stop capybaraa" / "normal mode" / `/capybaraa off` turns it off.
 
-Related: `/capybara-review` reviews a diff against the six pillars. `/capybara-help`
+Related: `/capybaraa-review` reviews a diff against the six pillars. `/capybaraa-help`
 prints the quick-reference card.

@@ -1,5 +1,5 @@
 // Two prompt variants promptfoo runs head to head: the bare task (baseline) and the
-// same task with capybara's principles prepended. The capybara text comes straight
+// same task with capybaraa's principles prepended. The capybaraa text comes straight
 // from the plugin's single source of truth, so the benchmark tests what ships.
 'use strict';
 
@@ -9,8 +9,8 @@ function baseline({ vars }) {
   return vars.instruction;
 }
 
-function capybara({ vars }) {
+function capybaraa({ vars }) {
   return `${getInstructions('high')}\n\n---\n\n${vars.instruction}`;
 }
 
-module.exports = { baseline, capybara };
+module.exports = { baseline, capybaraa };

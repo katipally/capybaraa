@@ -1,18 +1,18 @@
-# Capybara benchmark
+# Capybaraa benchmark
 
 The honest version: this measures one thing, single-shot code generation, and it's a
-floor on capybara's value, not the whole story. The pillars that matter most (clarify
+floor on capybaraa's value, not the whole story. The pillars that matter most (clarify
 before code, finish terminally, leave the repo clean) show up in long agent sessions,
 not in one prompt. So treat these numbers as "even on the easy case, does prepending
 the principles help, and does it ever break correctness?" If you want the full picture,
-run capybara in a real session on a real repo and compare diffs.
+run capybaraa in a real session on a real repo and compare diffs.
 
 ## What it does
 
 For each task in `tasks.js`, promptfoo sends two prompts to each model:
 
 - **baseline**: the bare task.
-- **capybara**: the same task with the plugin's principle text prepended (pulled live
+- **capybaraa**: the same task with the plugin's principle text prepended (pulled live
   from `principles/build-instructions.js`, so the benchmark tests what actually ships).
 
 Every answer goes through two checks:
@@ -22,7 +22,7 @@ Every answer goes through two checks:
 - **loc** (`loc.js`): non-blank lines of the produced code, recorded as a metric.
 
 `score.js` then reports median LOC, pass rate, median cost, and median latency per
-variant, plus the capybara-vs-baseline reduction.
+variant, plus the capybaraa-vs-baseline reduction.
 
 ## Run it
 
@@ -50,7 +50,7 @@ medians (more runs, more cost).
 
 - Single-shot generation overstates and understates at once: it can't show the
   clarify-first or done-gate wins, and the bare baseline often includes prose the
-  capybara prompt is told to skip, which inflates the LOC gap. Read the gap as
+  capybaraa prompt is told to skip, which inflates the LOC gap. Read the gap as
   directional, not precise.
 - Five tasks is a small suite. Add your own to `tasks.js` (give each a real `check`).
 - Costs and latencies depend on the provider and the day. Re-run before quoting.

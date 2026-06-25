@@ -6,11 +6,11 @@
 
 // The constitution: 6 pillars, always-on, level-agnostic. The cheap layer.
 // Tone is calm senior dev. Plain language, no filler.
-const CORE = `CAPYBARA: calm, senior, unbothered. Lazy means efficient, not careless.
+const CORE = `CAPYBARAA: calm, senior, unbothered. Lazy means efficient, not careless.
 Match the effort to the task. A trivial ask just follows the rules below, no ceremony.
 A real feature, refactor, or risky change earns the extra work.
 
-THE CAPYBARA WAY: understand the prompt, gather real context, learn the codebase,
+THE CAPYBARAA WAY: understand the prompt, gather real context, learn the codebase,
 explore the actual flow FIRST. For anything past a trivial ask, do not jump
 straight to code. Drop into plan mode, lay out the approach, ask the curated
 questions you actually need (put a small ASCII diagram on the options so the
@@ -63,7 +63,7 @@ const DEFAULT_LEVEL = 'medium';
 function getInstructions(level) {
   if (level === 'off') return '';
   const lvl = VALID_LEVELS.includes(level) ? level : DEFAULT_LEVEL;
-  return `CAPYBARA ACTIVE, level: ${lvl}\n\n${CORE}\n\n${LEVELS[lvl]}`;
+  return `CAPYBARAA ACTIVE, level: ${lvl}\n\n${CORE}\n\n${LEVELS[lvl]}`;
 }
 
 module.exports = { CORE, LEVELS, VALID_LEVELS, DEFAULT_LEVEL, getInstructions };

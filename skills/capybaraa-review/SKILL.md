@@ -1,16 +1,16 @@
 ---
-name: capybara-review
+name: capybaraa-review
 description: >
-  Review the current diff against capybara's six pillars: clarify, lean, optimal,
+  Review the current diff against capybaraa's six pillars: clarify, lean, optimal,
   economy, complete, hygiene. Finds guessed specs, speculative abstractions, bad
   complexity, filler, unfinished work, and mess left behind. One line per finding,
   lists only, does not apply fixes.
-  Use when the user says "review against the pillars", "capybara review", "/capybara-review",
+  Use when the user says "review against the pillars", "capybaraa review", "/capybaraa-review",
   or asks what's wrong with a change before they ship it.
 license: MIT
 ---
 
-# Capybara Review
+# Capybaraa Review
 
 Review the current change (the staged/unstaged diff, or the files the user names)
 against the six pillars. This is a quality pass, not a correctness audit: it hunts

@@ -1,11 +1,11 @@
-<h1 align="center">🦫 Capybara</h1>
+<h1 align="center">🦫 Capybaraa</h1>
 
 <p align="center">
   <em>The chillest senior dev in the swamp. Doesn't panic, doesn't over-build. Asks first, ships clean, leaves.</em>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/npm/v/@katipally/capybara?style=flat-square&color=8a6d3b&label=npm" alt="npm">
+  <img src="https://img.shields.io/npm/v/capybaraa?style=flat-square&color=8a6d3b&label=npm" alt="npm">
   <img src="https://img.shields.io/badge/works%20with-4%20tools-8a6d3b?style=flat-square" alt="Works with 4 tools">
   <img src="https://img.shields.io/badge/license-MIT-8a6d3b?style=flat-square" alt="MIT license">
   <img src="https://img.shields.io/badge/levels-low%20·%20medium%20·%20high-8a6d3b?style=flat-square" alt="Levels">
@@ -13,7 +13,7 @@
 
 You know the type. Unbothered, has seen every framework rise and fall and didn't migrate to any of them. You hand over a vague ticket and fifty lines of someone's first draft. He reads it, asks the two questions that actually matter, draws a little box-and-arrow on a napkin, and replaces the whole thing with the part you needed.
 
-Capybara puts that habit inside your AI agent.
+Capybaraa puts that habit inside your AI agent.
 
 It's the half of "good engineering" that agents skip: think before you type, then leave the place clean. It makes the agent clarify the spec before it writes code, pick the right complexity, stop padding output, actually verify "done", and not leave dead code and stale comments behind.
 
@@ -21,7 +21,7 @@ It's the half of "good engineering" that agents skip: think before you type, the
 
 You ask for "add a settings page." A stock agent invents a `SettingsManager`, a `ConfigProvider`, three new files, a migration, and starts coding before it knows what settings you even mean.
 
-With capybara it drops into plan mode first:
+With capybaraa it drops into plan mode first:
 
 ```
 🦫 a couple of questions before I touch code:
@@ -41,7 +41,7 @@ Then it writes the smallest thing that answers your actual answers, and runs the
 
 ## The six pillars
 
-> **The capybara way:** understand the prompt, gather real context, learn the
+> **The capybaraa way:** understand the prompt, gather real context, learn the
 > codebase, explore the actual flow. For anything past a trivial ask, drop into
 > plan mode, ask the curated questions you need (ASCII on the options), then write
 > the real root-cause fix. Never patchwork.
@@ -59,7 +59,7 @@ The point was never "fewest tokens." It's: do exactly what the task needs, under
 
 ## How it works
 
-One source of truth, [`principles/build-instructions.js`](principles/build-instructions.js), injected every session by a `SessionStart` hook and into every subagent by a `SubagentStart` hook. Your level lives in a flag file (`~/.claude/.capybara-active`).
+One source of truth, [`principles/build-instructions.js`](principles/build-instructions.js), injected every session by a `SessionStart` hook and into every subagent by a `SubagentStart` hook. Your level lives in a flag file (`~/.claude/.capybaraa-active`).
 
 It's proportional, on purpose:
 
@@ -88,10 +88,10 @@ The harness pairs each task with a correctness gate, so a broken one-liner that 
 ### Claude Code (native plugin, recommended)
 
 ```
-/plugin marketplace add katipally/capybara
+/plugin marketplace add katipally/capybaraa
 ```
 ```
-/plugin install capybara@capybara
+/plugin install capybaraa@capybaraa
 ```
 (Two separate prompts.) Needs `node` on your PATH for the lifecycle hooks. Without it the skills still work, the always-on activation just stays quiet.
 
@@ -100,54 +100,54 @@ The harness pairs each task with a correctness gate, so a broken one-liner that 
 Run in your project. It detects what you have and writes each tool's rules file:
 
 ```bash
-npx @katipally/capybara init       # detect tools, install the rules
-npx @katipally/capybara doctor     # show what's installed where
-npx @katipally/capybara update     # refresh to the latest text
+npx capybaraa init       # detect tools, install the rules
+npx capybaraa doctor     # show what's installed where
+npx capybaraa update     # refresh to the latest text
 ```
 
-(After `npm i -g @katipally/capybara` it's just `capybara init`.)
+(After `npm i -g capybaraa` it's just `capybaraa init`.)
 
 ## Levels
 
 ```
-/capybara low | medium | high | off          "stop capybara" also turns it off
+/capybaraa low | medium | high | off          "stop capybaraa" also turns it off
 ```
 
 | `low` | nudges only: build it, name the leaner option in one line |
 | `medium` *(default)* | all pillars, proportional; plan mode when the task warrants it |
 | `high` | aggressive: max questioning, deletion first, strict done-gate |
 
-The level shows in your statusline as `[CAPYBARA]` or `[CAPYBARA:HIGH]`. Set a default for every session with `CAPYBARA_DEFAULT_LEVEL` (`low`/`medium`/`high`/`off`) or `defaultLevel` in `~/.config/capybara/config.json`. Default is `medium`.
+The level shows in your statusline as `[CAPYBARAA]` or `[CAPYBARAA:HIGH]`. Set a default for every session with `CAPYBARAA_DEFAULT_LEVEL` (`low`/`medium`/`high`/`off`) or `defaultLevel` in `~/.config/capybaraa/config.json`. Default is `medium`.
 
 ## Commands
 
-The six pillars are always on, there's no command to run them. Once installed, capybara applies to every task automatically. The slash commands are just for intensity, review, and help:
+The six pillars are always on, there's no command to run them. Once installed, capybaraa applies to every task automatically. The slash commands are just for intensity, review, and help:
 
 | Command | What it does |
 |---------|--------------|
-| `/capybara [low \| medium \| high \| off]` | Set the intensity, or turn it off. No argument means medium. |
-| `/capybara-review` | Review the current diff against the six pillars. Lists findings, doesn't edit. |
-| `/capybara-help` | Quick reference card. |
+| `/capybaraa [low \| medium \| high \| off]` | Set the intensity, or turn it off. No argument means medium. |
+| `/capybaraa-review` | Review the current diff against the six pillars. Lists findings, doesn't edit. |
+| `/capybaraa-help` | Quick reference card. |
 
-They're plugin skills, so they may show up namespaced as `/capybara:capybara` in the menu. Skills load at session start, so start a new session after installing. The wizard-installed tools (Cursor, Copilot, OpenCode) get the same always-on rules.
+They're plugin skills, so they may show up namespaced as `/capybaraa:capybaraa` in the menu. Skills load at session start, so start a new session after installing. The wizard-installed tools (Cursor, Copilot, OpenCode) get the same always-on rules.
 
 ## Develop and test locally
 
 ```bash
-git clone https://github.com/katipally/capybara && cd capybara
+git clone https://github.com/katipally/capybaraa && cd capybaraa
 node test/smoke.js                 # the runnable checks (principles, parsing, bridges)
 claude --plugin-dir .              # load the plugin without installing
 claude plugin validate .           # validate the manifest (Claude Code CLI)
 ```
 
-To exercise the wizard without publishing: `node bin/capybara.js init` in a throwaway directory.
+To exercise the wizard without publishing: `node bin/capybaraa.js init` in a throwaway directory.
 
 ## Uninstall
 
 | Host | Command |
 |------|---------|
-| Claude Code | `/plugin remove capybara` |
-| Cursor / Copilot / OpenCode | `npx @katipally/capybara uninstall` (removes the rules it wrote) |
+| Claude Code | `/plugin remove capybaraa` |
+| Cursor / Copilot / OpenCode | `npx capybaraa uninstall` (removes the rules it wrote) |
 
 ## FAQ
 
@@ -155,9 +155,9 @@ To exercise the wizard without publishing: `node bin/capybara.js init` in a thro
 No. Trivial asks get the rules and nothing else. The questions and the done-gate only fire when the task is big or ambiguous enough to need them.
 
 **Do I need a config file?**
-No. `CAPYBARA_DEFAULT_LEVEL` or `~/.config/capybara/config.json` can set a default level, but nothing is required.
+No. `CAPYBARAA_DEFAULT_LEVEL` or `~/.config/capybaraa/config.json` can set a default level, but nothing is required.
 
-**Why a capybara?**
+**Why a capybaraa?**
 Calmest animal alive, gets along with everything, wastes zero energy. You already knew.
 
 ## License

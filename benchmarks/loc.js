@@ -1,5 +1,5 @@
 // promptfoo assertion that never fails: it just records the answer's line count as
-// a score so we can compare capybara vs. baseline. Counts non-blank lines of the
+// a score so we can compare capybaraa vs. baseline. Counts non-blank lines of the
 // extracted code (or the whole answer for structural tasks).
 'use strict';
 

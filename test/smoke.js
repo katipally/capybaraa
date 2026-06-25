@@ -17,10 +17,10 @@ assert.match(getInstructions('bogus'), /level: medium/, 'unknown level => defaul
 assert.match(getInstructions('medium'), /2\. LEAN/, 'LEAN pillar always ships (no ponytail dependency)');
 
 // command parsing
-assert.strictEqual(parseCommand('please /capybara high'), 'high');
-assert.strictEqual(parseCommand('capybara off'), 'off');
+assert.strictEqual(parseCommand('please /capybaraa high'), 'high');
+assert.strictEqual(parseCommand('capybaraa off'), 'off');
 assert.strictEqual(parseCommand('no command here'), null);
-assert.ok(isDeactivation('stop capybara'));
+assert.ok(isDeactivation('stop capybaraa'));
 assert.ok(isDeactivation('go normal mode now'));
 assert.ok(!isDeactivation('keep going'));
 
@@ -30,17 +30,17 @@ const claude = BRIDGES.find((b) => b.id === 'claude-code');
 const f1 = claude.install(tmp);
 assert.ok(hasBlock(f1), 'block written');
 claude.install(tmp); // re-run
-const once = fs.readFileSync(f1, 'utf8').match(/capybara:start/g).length;
+const once = fs.readFileSync(f1, 'utf8').match(/capybaraa:start/g).length;
 assert.strictEqual(once, 1, 'update is idempotent (one block, not two)');
 claude.remove(tmp);
 assert.ok(!hasBlock(f1) && !fs.existsSync(f1), 'remove cleans up');
 fs.rmSync(tmp, { recursive: true, force: true });
 
 // command parsing handles the namespaced form too
-assert.strictEqual(parseCommand('/capybara:capybara off'), 'off');
+assert.strictEqual(parseCommand('/capybaraa:capybaraa off'), 'off');
 
 // the two slash skills exist (Claude Code surfaces skills, not commands/*.toml)
-for (const s of ['capybara', 'capybara-help', 'capybara-review']) {
+for (const s of ['capybaraa', 'capybaraa-help', 'capybaraa-review']) {
   const p = path.join(__dirname, '..', 'skills', s, 'SKILL.md');
   assert.ok(fs.existsSync(p), `missing skill ${s}`);
   assert.ok(fs.readFileSync(p, 'utf8').startsWith('---'), `skill ${s} needs frontmatter`);
