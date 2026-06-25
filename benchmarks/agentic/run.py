@@ -67,12 +67,22 @@ def _snapshot(workdir):
          "commit", "-q", "-m", "base", "--no-verify")
 
 
+def _is_test(path: str):
+    """A produced file is a test if named like one or living in a tests/ dir. Writing a test is
+    the COMPLETE pillar's discipline, a POSITIVE signal, so it is never counted as source bloat."""
+    p = Path(path)
+    name = p.name.lower()
+    return (name.startswith("test_") or name.endswith(("_test.py", ".test.js", ".test.ts",
+            ".spec.js", ".spec.ts")) or "test" in [part.lower() for part in p.parts[:-1]])
+
+
 def _diff_stats(workdir: Path):
     """Added lines + touched files of code-ext files vs the seeded base. Matches the '+N' a PR shows,
-    so editing a seeded file counts, not just brand-new files. Underscore/dot scratch files excluded."""
+    so editing a seeded file counts, not just brand-new files. Tests are tracked SEPARATELY (never
+    as source bloat); underscore/dot scratch files excluded."""
     _git(workdir, "add", "-A")
     out = _git(workdir, "diff", "--cached", "--numstat", "HEAD").stdout
-    loc = files = 0
+    loc = files = test_loc = test_files = 0
     for line in out.splitlines():
         parts = line.split("\t")
         if len(parts) != 3:
@@ -83,9 +93,11 @@ def _diff_stats(workdir: Path):
         name = Path(path).name
         if Path(path).suffix not in CODE_EXT or name.startswith((".", "_")) or "node_modules" in path:
             continue
-        loc += int(added)
-        files += 1
-    return {"src_loc": loc, "src_files": files}
+        if _is_test(path):
+            test_loc += int(added); test_files += 1
+        else:
+            loc += int(added); files += 1
+    return {"src_loc": loc, "src_files": files, "test_loc": test_loc, "test_files": test_files}
 
 
 # ─────────────────────────── headless cell ───────────────────────────
@@ -185,6 +197,7 @@ def score_workspace(task_id, arm, model, workdir: Path):
     stats = _diff_stats(workdir)
     base = {"task": task_id, "arm": arm, "model": model,
             "src_files": stats["src_files"], "src_loc": stats["src_loc"],
+            "test_files": stats["test_files"], "test_loc": stats["test_loc"],
             "activated": (workdir / "_activated.txt").read_text(encoding="utf-8").strip()
                          if (workdir / "_activated.txt").exists() else "",
             **meta}
@@ -245,6 +258,8 @@ def aggregate(results):
         row = {"task": t, "arm": a, "model": m, "n": n,
                "pillar": TASKS[t]["pillar"],
                "src_loc_median": med("src_loc"), "src_files_median": med("src_files"),
+               "wrote_tests_rate": round(sum(1 for c in cells if c.get("test_files", 0) > 0) / n, 3),
+               "test_loc_median": med("test_loc"),
                "cost_mean": mean("cost"),
                "time_s_mean": round(mean("duration_ms") / 1000, 1) if mean("duration_ms") else None}
         if TASKS[t].get("judge_only"):
@@ -274,6 +289,7 @@ def print_table(rows):
                 for extra in ("reuse_rate", "native_rate", "hygiene_rate", "ran_check_rate"):
                     if extra in r:
                         bits.append(f"{extra.replace('_rate','')}%={r[extra]}")
+            bits.append(f"tests%={r.get('wrote_tests_rate')}")
             bits += [f"{cost}", f"{r.get('time_s_mean')}s"]
             print("  " + "  ".join(str(b) for b in bits))
 
