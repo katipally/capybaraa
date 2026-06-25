@@ -3,13 +3,19 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [0.2.2] - 2026-06-25
+
+- **Claude Code only.** Dropped Cursor / Copilot / OpenCode support and the npm
+  CLI that installed them (`bin/`, `installer/`). Those tools have no hook or
+  skill system, so they only ever got static rules text; the project is now a
+  focused native plugin. Removed the npm publish workflow — releases ship from
+  this repo via the marketplace pin. See [RELEASING.md](RELEASING.md).
+
 ## [0.2.1] - 2026-06-25
 
 - Renamed to **capybaraa** across the board (plugin, slash commands `/capybaraa`,
-  skills, flag file, statusline badge, npm package). Plain `capybara` was already
-  taken on npm; the doubled `a` is the published name and now the consistent brand.
-- First release published to npm and wired for tag-driven releases. See
-  [RELEASING.md](RELEASING.md).
+  skills, flag file, statusline badge). Plain `capybara` was already taken, so the
+  doubled `a` is the consistent brand.
 
 ## [0.2.0] - 2026-06-24
 

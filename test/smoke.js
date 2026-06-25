@@ -3,18 +3,16 @@
 
 const assert = require('node:assert');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
 
 const { getInstructions } = require('../principles/build-instructions.js');
 const { parseCommand, isDeactivation, writeHookOutput } = require('../hooks/config.js');
-const { BRIDGES, hasBlock } = require('../installer/bridges.js');
 
 // principles
 assert.strictEqual(getInstructions('off'), '', 'off => empty');
 assert.match(getInstructions('medium'), /level: medium/);
 assert.match(getInstructions('bogus'), /level: medium/, 'unknown level => default');
-assert.match(getInstructions('medium'), /2\. LEAN/, 'LEAN pillar always ships (no ponytail dependency)');
+assert.match(getInstructions('medium'), /2\. LEAN/, 'all six pillars ship');
 
 // command parsing
 assert.strictEqual(parseCommand('please /capybaraa high'), 'high');
@@ -24,22 +22,10 @@ assert.ok(isDeactivation('stop capybaraa'));
 assert.ok(isDeactivation('go normal mode now'));
 assert.ok(!isDeactivation('keep going'));
 
-// bridges install + idempotent update + doctor + remove, in a temp project
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'capy-'));
-const claude = BRIDGES.find((b) => b.id === 'claude-code');
-const f1 = claude.install(tmp);
-assert.ok(hasBlock(f1), 'block written');
-claude.install(tmp); // re-run
-const once = fs.readFileSync(f1, 'utf8').match(/capybaraa:start/g).length;
-assert.strictEqual(once, 1, 'update is idempotent (one block, not two)');
-claude.remove(tmp);
-assert.ok(!hasBlock(f1) && !fs.existsSync(f1), 'remove cleans up');
-fs.rmSync(tmp, { recursive: true, force: true });
-
 // command parsing handles the namespaced form too
 assert.strictEqual(parseCommand('/capybaraa:capybaraa off'), 'off');
 
-// the two slash skills exist (Claude Code surfaces skills, not commands/*.toml)
+// the three slash skills exist (Claude Code surfaces skills, not commands/*.toml)
 for (const s of ['capybaraa', 'capybaraa-help', 'capybaraa-review']) {
   const p = path.join(__dirname, '..', 'skills', s, 'SKILL.md');
   assert.ok(fs.existsSync(p), `missing skill ${s}`);

@@ -1,6 +1,6 @@
 // Single source of truth for the injected principle text.
-// Consumed by hooks/activate.js (SessionStart) and hooks/subagent.js (SubagentStart),
-// and by the platform bridges. Keep it terse, it ships every session (ECONOMY).
+// Consumed by hooks/activate.js (SessionStart) and hooks/subagent.js (SubagentStart).
+// Keep it terse, it ships every session (ECONOMY).
 
 'use strict';
 

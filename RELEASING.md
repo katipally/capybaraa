@@ -1,48 +1,43 @@
 # Releasing
 
-capybaraa ships through two channels. GitHub is the Claude Code plugin; npm is the
-`npx capybaraa` CLI. One tag drives both.
+capybaraa is a Claude Code plugin, distributed straight from this GitHub repo —
+no npm, no registry. Users install it with `/plugin marketplace add
+katipally/capybaraa`, and the marketplace pin follows `ref:"main"` in
+`.claude-plugin/marketplace.json`. So **a release is just a push to `main`.**
 
 ```
- git tag vX.Y.Z  ──▶  push  ──▶  publish.yml
-                                   ├─ verify tag == package.json version
-                                   ├─ npm test
-                                   ├─ npm publish --provenance   (npm)
-                                   └─ gh release create           (GitHub Release)
- push to main    ──▶  marketplace pin follows ref:"main"         (plugin users)
+ edit + bump versions  ──▶  push to main  ──▶  users on the marketplace pin get it
+ (optional) git tag vX.Y.Z ──▶ push tag    ──▶  a GitHub Release for the changelog
 ```
-
-## One-time setup (do once, ever)
-
-npm publishing uses **OIDC trusted publishing** — no `NPM_TOKEN` secret to manage.
-
-1. Claim the name on npm (first publish only). Either run `npm publish --access public`
-   once from your machine, or create the package on the npm website.
-2. On npm: **capybaraa → Settings → Trusted Publisher → Add GitHub Actions**,
-   repo `katipally/capybaraa`, workflow `publish.yml`.
-
-After this, every release is just a tag push — the Action mints a short-lived
-token via OIDC at publish time. Needs npm ≥ 11.5.1 (Node 22 in the workflow).
 
 ## Cut a release
 
-1. Bump the version in **all three** manifests (they must agree, the CI guard
-   enforces tag == `package.json`):
-   - `package.json`
+1. Bump the version in **both** manifests (keep them equal):
    - `.claude-plugin/plugin.json`
    - `.claude-plugin/marketplace.json` (the nested `plugins[0].version`)
 2. Add a dated `## [X.Y.Z]` section to `CHANGELOG.md`.
-3. Commit and push to `main`. (Plugin users on the marketplace pin get it now,
-   the pin follows `ref:"main"`.)
-4. Tag and push:
+3. Validate and test locally:
    ```bash
-   git tag vX.Y.Z
-   git push origin vX.Y.Z
+   npm test                 # node test/smoke.js
+   claude plugin validate . # manifest check (Claude Code CLI)
    ```
-5. Watch the **Publish to npm** Action. Green = live on npm with a GitHub Release.
+4. Commit and push to `main`. Done — marketplace users get it on their next pull.
 
-That's it. CI runs `npm test` on every push/PR (Node 18/20/22); the publish job
-re-runs it before publishing, so a broken build never ships.
+CI (`.github/workflows/ci.yml`) runs `npm test` on Node 18/20/22 and a best-effort
+manifest validation for every push and PR, so a broken plugin never lands on `main`.
+
+## Optional: tag a GitHub Release
+
+If you want a visible release entry with notes:
+
+```bash
+git tag vX.Y.Z
+git push origin vX.Y.Z
+gh release create vX.Y.Z --title vX.Y.Z --generate-notes
+```
+
+Tags are cosmetic here — they don't change what marketplace users receive (that's
+driven by `ref:"main"`).
 
 ## Optional: official Claude Code marketplace
 

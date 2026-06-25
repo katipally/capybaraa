@@ -5,15 +5,14 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/npm/v/capybaraa?style=flat-square&color=8a6d3b&label=npm" alt="npm">
-  <img src="https://img.shields.io/badge/works%20with-4%20tools-8a6d3b?style=flat-square" alt="Works with 4 tools">
+  <img src="https://img.shields.io/badge/Claude%20Code-plugin-8a6d3b?style=flat-square" alt="Claude Code plugin">
   <img src="https://img.shields.io/badge/license-MIT-8a6d3b?style=flat-square" alt="MIT license">
   <img src="https://img.shields.io/badge/levels-low%20·%20medium%20·%20high-8a6d3b?style=flat-square" alt="Levels">
 </p>
 
 You know the type. Unbothered, has seen every framework rise and fall and didn't migrate to any of them. You hand over a vague ticket and fifty lines of someone's first draft. He reads it, asks the two questions that actually matter, draws a little box-and-arrow on a napkin, and replaces the whole thing with the part you needed.
 
-Capybaraa puts that habit inside your AI agent.
+Capybaraa puts that habit inside Claude Code.
 
 It's the half of "good engineering" that agents skip: think before you type, then leave the place clean. It makes the agent clarify the spec before it writes code, pick the right complexity, stop padding output, actually verify "done", and not leave dead code and stale comments behind.
 
@@ -85,7 +84,7 @@ The harness pairs each task with a correctness gate, so a broken one-liner that 
 
 ## Install
 
-### Claude Code (native plugin, recommended)
+Capybaraa is a native Claude Code plugin, installed from this repo:
 
 ```
 /plugin marketplace add katipally/capybaraa
@@ -93,19 +92,7 @@ The harness pairs each task with a correctness gate, so a broken one-liner that 
 ```
 /plugin install capybaraa@capybaraa
 ```
-(Two separate prompts.) Needs `node` on your PATH for the lifecycle hooks. Without it the skills still work, the always-on activation just stays quiet.
-
-### Cursor, Copilot, OpenCode (one-shot wizard)
-
-Run in your project. It detects what you have and writes each tool's rules file:
-
-```bash
-npx capybaraa init       # detect tools, install the rules
-npx capybaraa doctor     # show what's installed where
-npx capybaraa update     # refresh to the latest text
-```
-
-(After `npm i -g capybaraa` it's just `capybaraa init`.)
+(Two separate prompts.) Needs `node` on your PATH for the lifecycle hooks. Without it the skills still work, the always-on activation just stays quiet. Start a new session after installing so the skills load.
 
 ## Levels
 
@@ -129,25 +116,20 @@ The six pillars are always on, there's no command to run them. Once installed, c
 | `/capybaraa-review` | Review the current diff against the six pillars. Lists findings, doesn't edit. |
 | `/capybaraa-help` | Quick reference card. |
 
-They're plugin skills, so they may show up namespaced as `/capybaraa:capybaraa` in the menu. Skills load at session start, so start a new session after installing. The wizard-installed tools (Cursor, Copilot, OpenCode) get the same always-on rules.
+They're plugin skills, so they may show up namespaced as `/capybaraa:capybaraa` in the menu. Skills load at session start, so start a new session after installing.
 
 ## Develop and test locally
 
 ```bash
 git clone https://github.com/katipally/capybaraa && cd capybaraa
-node test/smoke.js                 # the runnable checks (principles, parsing, bridges)
+node test/smoke.js                 # the runnable checks (principles, parsing, skills)
 claude --plugin-dir .              # load the plugin without installing
 claude plugin validate .           # validate the manifest (Claude Code CLI)
 ```
 
-To exercise the wizard without publishing: `node bin/capybaraa.js init` in a throwaway directory.
-
 ## Uninstall
 
-| Host | Command |
-|------|---------|
-| Claude Code | `/plugin remove capybaraa` |
-| Cursor / Copilot / OpenCode | `npx capybaraa uninstall` (removes the rules it wrote) |
+`/plugin remove capybaraa`
 
 ## FAQ
 
