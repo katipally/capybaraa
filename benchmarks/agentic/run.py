@@ -30,9 +30,26 @@ from tasks import TASKS
 ROOT = Path(__file__).resolve().parents[2]          # the capybaraa plugin repo (its own plugin dir)
 RUNS_DIR = Path(__file__).resolve().parent / "runs"
 
-ARMS = ("baseline", "capybaraa", "concise")
 MODELS = {"haiku": "claude-haiku-4-5-20251001", "sonnet": "claude-sonnet-4-6", "opus": "claude-opus-4-8"}
-CONCISE_PROMPT = "Be concise. Build the minimal thing that works and stop."
+
+# Arms, ponytail-style. Three kinds:
+#   bare   - the unaided agent (the fair baseline / "regular")
+#   plugin - a real SessionStart-hook plugin loaded via --plugin-dir; `src` resolves the dir,
+#            `flag`/`level` pin its activation flag for the run (restored after)
+#   prompt - a system-prompt instruction via --append-system-prompt (no plugin)
+# capybaraa is the dev repo; ponytail/caveman come from the installed ponytail plugin so the
+# comparison is against what those skills actually ship.
+ARMS = {
+    "baseline":       {"kind": "bare"},
+    "regular":        {"kind": "bare"},                                   # alias for baseline
+    "capybaraa":      {"kind": "plugin", "src": "capybaraa", "flag": ".capybaraa-active", "level": "high"},
+    "ponytail":       {"kind": "plugin", "src": "ponytail",  "flag": ".ponytail-active",  "level": "full"},
+    "caveman":        {"kind": "prompt", "text": None},                   # filled from caveman-SKILL.md
+    "yagni":          {"kind": "prompt", "text": "Follow YAGNI principles."},
+    "yagni-oneliner": {"kind": "prompt", "text": "Follow YAGNI principles, and prefer one-liner solutions."},
+    "concise":        {"kind": "prompt", "text": "Be concise. Build the minimal thing that works and stop."},
+}
+DEFAULT_ARMS = ("baseline", "capybaraa", "concise")
 
 CELL_TIMEOUT = 300
 CODE_EXT = {".py", ".js", ".ts", ".jsx", ".tsx", ".html", ".css", ".go", ".rs", ".java", ".rb"}
@@ -45,13 +62,47 @@ NO_RUN_TESTS_OK = ("Make the change and verify it the way you normally would. Do
                    "server, install dependencies, or open a browser. Running the test suite is fine.")
 
 
-def _plugin_dir():
-    return os.environ.get("CAPYBARAA_PLUGIN_DIR") or str(ROOT)
+def _resolve_plugin(src):
+    """capybaraa -> the dev repo (override with CAPYBARAA_PLUGIN_DIR); any other name -> the latest
+    version under ~/.claude/plugins/cache/<name>/<name>/ (override with <NAME>_PLUGIN_DIR).
+    Returns None if not installed, so a missing ponytail can't block a capybaraa-only run."""
+    env = os.environ.get(f"{src.upper()}_PLUGIN_DIR")
+    if env:
+        return env
+    if src == "capybaraa":
+        return str(ROOT)
+    base = Path.home() / ".claude" / "plugins" / "cache" / src / src
+    versions = sorted(p for p in base.glob("*") if p.is_dir()) if base.exists() else []
+    return str(versions[-1]) if versions else None
 
 
-def _flag_path():
+_CAVEMAN_FALLBACK = ("Talk like a caveman: very few words, no filler. Write the smallest code that "
+                     "works and stop. No abstractions, no boilerplate.")
+
+def _caveman_text():
+    """Use the real caveman skill from the installed ponytail plugin if present, else a short fallback."""
+    d = _resolve_plugin("ponytail")
+    if d:
+        p = Path(d) / "benchmarks" / "arms" / "caveman-SKILL.md"
+        if p.exists():
+            try:
+                return p.read_text(encoding="utf-8")
+            except Exception:
+                pass
+    return _CAVEMAN_FALLBACK
+
+
+def _arm_append(arm):
+    """The --append text for a prompt arm (None for bare/plugin arms)."""
+    spec = ARMS[arm]
+    if spec["kind"] != "prompt":
+        return None
+    return spec["text"] if spec.get("text") else _caveman_text()
+
+
+def _flag_path(name=".capybaraa-active"):
     base = os.environ.get("CLAUDE_CONFIG_DIR") or str(Path.home() / ".claude")
-    return Path(base) / ".capybaraa-active"
+    return Path(base) / name
 
 
 def _git(workdir, *args):
@@ -111,8 +162,11 @@ def _build_cmd(task, arm, model, append):
            "--setting-sources", "project,local", "--strict-mcp-config"]
     if not task.get("allow_bash"):
         cmd += ["--disallowedTools", "Bash"]
-    if arm == "capybaraa":
-        cmd += ["--plugin-dir", _plugin_dir()]
+    if ARMS[arm]["kind"] == "plugin":
+        pdir = _resolve_plugin(ARMS[arm]["src"])
+        if not pdir:
+            raise RuntimeError(f"{arm} plugin not installed (set {ARMS[arm]['src'].upper()}_PLUGIN_DIR)")
+        cmd += ["--plugin-dir", pdir]
     cmd += ["--append-system-prompt", append]
     return cmd
 
@@ -156,18 +210,26 @@ def run_cell(task_id, arm, model, workdir: Path):
         seeded.add(rel.replace("\\", "/"))
     _snapshot(workdir)                                # base commit -> diff the agent's additions
 
-    # Real ~/.claude (auth lives there); isolation is the cwd + --setting-sources + --plugin-dir.
-    # The harness pins the level flag to high for the run (see main), so the capybaraa arm
-    # activates; baseline/concise never load the plugin so the flag is inert for them.
+    # Real ~/.claude (auth lives there); isolation is the cwd + --setting-sources + one --plugin-dir.
+    # main() pins each plugin arm's level flag for the run, so plugin arms activate; bare/prompt
+    # arms load no plugin so the flags are inert for them.
+    spec = ARMS[arm]
     env = dict(os.environ)
-    if arm == "capybaraa":
-        env["CAPYBARAA_DEFAULT_LEVEL"] = "high"
+    if spec["kind"] == "plugin":
+        env[f"{spec['src'].upper()}_DEFAULT_LEVEL"] = spec["level"]   # belt-and-suspenders for activation
 
     append = NO_RUN_TESTS_OK if task.get("allow_bash") else NO_RUN
-    if arm == "concise":
-        append = CONCISE_PROMPT + "\n\n" + append
+    arm_text = _arm_append(arm)
+    if arm_text:
+        append = arm_text + "\n\n" + append
 
-    cmd = _build_cmd(task, arm, model, append)
+    try:
+        cmd = _build_cmd(task, arm, model, append)
+    except RuntimeError as e:                              # plugin not installed -> skip this cell cleanly
+        (workdir / "_claude.jsonl").write_text(json.dumps({"type": "result", "result": "", "error": str(e)}), encoding="utf-8")
+        (workdir / "_activated.txt").write_text("", encoding="utf-8")
+        (workdir / "_ran_check.txt").write_text("0", encoding="utf-8")
+        return {"task": task_id, "arm": arm, "model": model, "error": str(e), "src_loc": 0, "src_files": 0}
     out_path, err_path = workdir / "_claude.jsonl", workdir / "_claude.stderr.txt"
     try:
         with open(out_path, "wb") as so, open(err_path, "wb") as se:
@@ -184,10 +246,13 @@ def run_cell(task_id, arm, model, workdir: Path):
     (workdir / "_result.txt").write_text(result_text, encoding="utf-8")
     ran = 1 if any(_RAN_CHECK_RE.search(c or "") for c in bash) else 0
     (workdir / "_ran_check.txt").write_text(str(ran), encoding="utf-8")
-    # activation: the harness pinned the flag to high; capy arm should read it, others ignore it.
-    flag = _flag_path()
-    lvl = flag.read_text(encoding="utf-8").strip() if flag.exists() else ""
-    (workdir / "_activated.txt").write_text(lvl if arm == "capybaraa" else "", encoding="utf-8")
+    # activation: read this plugin arm's pinned flag back (proof the right hook fired); bare/prompt -> empty
+    if spec["kind"] == "plugin":
+        flag = _flag_path(spec["flag"])
+        lvl = flag.read_text(encoding="utf-8").strip() if flag.exists() else ""
+    else:
+        lvl = ""
+    (workdir / "_activated.txt").write_text(lvl, encoding="utf-8")
     return score_workspace(task_id, arm, model, workdir)
 
 
@@ -336,7 +401,8 @@ def main():
     ap.add_argument("--rescore")
     ap.add_argument("--task")
     ap.add_argument("--all", action="store_true")
-    ap.add_argument("--arms", default=",".join(ARMS))
+    ap.add_argument("--arms", default=",".join(DEFAULT_ARMS),
+                    help="comma list from: " + ", ".join(ARMS))
     ap.add_argument("--models", default="haiku")
     ap.add_argument("--runs", type=int, default=1)
     ap.add_argument("--workers", type=int, default=4)
@@ -354,6 +420,12 @@ def main():
     if not task_ids:
         sys.exit("give --task <id[,id...]>, --all, or --rescore <dir>")
     arms = [a.strip() for a in args.arms.split(",")]
+    unknown = [a for a in arms if a not in ARMS]
+    if unknown:
+        sys.exit(f"unknown arm(s): {unknown}. choose from: {', '.join(ARMS)}")
+    for a in arms:                                         # fail early if a plugin arm isn't installed
+        if ARMS[a]["kind"] == "plugin" and not _resolve_plugin(ARMS[a]["src"]):
+            sys.exit(f"arm '{a}' needs the {ARMS[a]['src']} plugin installed (or set {ARMS[a]['src'].upper()}_PLUGIN_DIR)")
     models = [m.strip() for m in args.models.split(",")]
     stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     out_dir = RUNS_DIR / stamp
@@ -363,13 +435,17 @@ def main():
     total, results, done = len(cells), [], 0
     print(f"running {total} cells, {args.workers} at a time", flush=True)
 
-    # Pin the level flag to high so the capybaraa arm activates regardless of any stale state;
-    # restore the user's original setting when we're done. baseline/concise never load the plugin.
-    flag = _flag_path()
-    orig_flag = flag.read_text(encoding="utf-8") if flag.exists() else None
-    if "capybaraa" in arms:
-        flag.parent.mkdir(parents=True, exist_ok=True)
-        flag.write_text("high\n", encoding="utf-8")
+    # Pin each plugin arm's level flag so it activates regardless of any stale state; restore the
+    # user's originals when done. bare/prompt arms load no plugin, so the flags are inert for them.
+    pinned = []                                            # (flag_path, original_text_or_None)
+    for a in arms:
+        spec = ARMS[a]
+        if spec["kind"] != "plugin":
+            continue
+        fp = _flag_path(spec["flag"])
+        pinned.append((fp, fp.read_text(encoding="utf-8") if fp.exists() else None))
+        fp.parent.mkdir(parents=True, exist_ok=True)
+        fp.write_text(spec["level"] + "\n", encoding="utf-8")
 
     def _one(spec):
         tid, arm, model, r = spec
@@ -395,11 +471,11 @@ def main():
                     {"date": stamp, "claude": _claude_version(),
                      "models": {m: MODELS[m] for m in models}, "results": results}, indent=2), encoding="utf-8")
     finally:
-        if "capybaraa" in arms:                       # restore the user's original level
-            if orig_flag is None:
-                flag.unlink(missing_ok=True)
+        for fp, orig in pinned:                       # restore each plugin's original level
+            if orig is None:
+                fp.unlink(missing_ok=True)
             else:
-                flag.write_text(orig_flag, encoding="utf-8")
+                fp.write_text(orig, encoding="utf-8")
 
     rows = aggregate(results)
     (out_dir / "summary.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")
