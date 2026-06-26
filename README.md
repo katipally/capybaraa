@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Claude%20Code-plugin-8a6d3b?style=flat-square" alt="Claude Code plugin">
   <img src="https://img.shields.io/badge/license-MIT-8a6d3b?style=flat-square" alt="MIT license">
-  <img src="https://img.shields.io/badge/modes-lean%20·%20deep-8a6d3b?style=flat-square" alt="Modes">
+  <img src="https://img.shields.io/badge/mode-one%20·%20always%20on-8a6d3b?style=flat-square" alt="Mode">
 </p>
 
 You know the type. Unbothered, has seen every framework rise and fall and didn't migrate to any of them. You hand over a vague ticket and fifty lines of someone's first draft. He reads it, asks the two questions that actually matter, draws a little box-and-arrow on a napkin, and replaces the whole thing with the part you needed.
@@ -62,37 +62,52 @@ The point was never "fewest tokens." It's: do exactly what the task needs, under
 
 ## How it works
 
-One source of truth, [`principles/build-instructions.js`](principles/build-instructions.js), injected every session by a `SessionStart` hook and into every subagent by a `SubagentStart` hook. Your mode lives in a flag file (`~/.claude/.capybaraa-active`).
+One source of truth, [`principles/build-instructions.js`](principles/build-instructions.js), injected every session by a `SessionStart` hook and into every subagent by a `SubagentStart` hook. Whether it's on lives in a flag file (`~/.claude/.capybaraa-active`).
 
-The 6 pillars are always on. The two modes set **how much it clarifies and explains**, the detail/token tradeoff:
+There's one mode and it has everything. No `lean`/`deep` dial to pick: the depth adapts to the task on its own, governed by the **conscious gate**:
 
 ```
  ALWAYS-ON  the 6 pillars as terse rules. prompt-cached, ~free per turn.
- lean       minimum tokens: build tight, ask only what blocks correctness,
-            skip ASCII unless it stops the wrong build.
- deep       a bit more tokens: full clarify-before-code, ASCII on the
- (default)  options, every edge case, complete code, strict done-gate.
+ GATE       before any token-expensive move (deep exploration, subagents,
+            a full clarify ceremony, long output) check the spend is
+            proportional. small task -> just do it, no ceremony, no burst.
+            scope unclear & a wrong guess is costly -> ask ONE question first.
+ FULL       when the task earns it: clarify-before-code, ASCII on the
+            options, every edge case, complete code, strict done-gate.
 ```
 
-Both stay proportional to task size: a one-line fix gets the rules and nothing else, no token burst, in either mode. The modes change the ceiling, not the floor. `deep` is the ideal default and plan mode is the perfect place for its clarifying; switch to `lean` when you want the cheapest turns.
+Same rules in every case; what adapts is the spend. A one-line fix gets the rules and nothing else, no token burst. A real feature or hard bug earns the full treatment. Plan mode, when you're in it, is the perfect place for the clarifying.
 
 ### You can see it working
 
 So you never have to guess whether it is on, capybaraa signs its work. Every substantive reply opens with a badge and non-trivial work closes with a one-line sign-off of what it did under the pillars:
 
 ```
-🦫 capybaraa · deep
+🦫 capybaraa
 
    ...the actual answer...
 
 🦫 clarified the storage question, reused the existing helper, ran the check.
 ```
 
-If you do not see the 🦫 badge, capybaraa is off (or the session predates install, start a new one). The statusline badge `[CAPYBARAA]` / `[CAPYBARAA:LEAN]` is the second tell.
+If you do not see the 🦫 badge, capybaraa is off (or the session predates install, start a new one). The statusline badge `[CAPYBARAA]` is the second tell.
 
 ## Does it actually help? (numbers)
 
-The honest answer: capybaraa's value is behavioral, so it shows up in a real agent session, not a one-shot line count. The [agentic benchmark](benchmarks/agentic/) runs actual headless Claude Code sessions on seeded workspaces and scores each arm on the pillar it targets. Here's the five-arm head-to-head (Haiku 4.5, n=3, [full writeup](benchmarks/results/2026-06-25-multiarm-haiku.md)): capybaraa vs the bare baseline, ponytail, caveman, and a "follow YAGNI, prefer one-liners" arm.
+The honest answer: capybaraa's value is behavioral, so it shows up in a real agent session, not a one-shot line count. The [agentic benchmark](benchmarks/agentic/) runs actual headless Claude Code sessions on seeded workspaces and scores each arm on the pillar it targets.
+
+**Current single-mode run (0.3.0, Sonnet 4.6, n=2, [writeup](benchmarks/results/2026-06-25-sonnet-0.3.0.md)).** Three tasks, median lines of code (lower is leaner); every arm stayed 100% correct, safe, and gate-passing:
+
+```
+ TASK (lower = leaner)   baseline   capybaraa   ponytail
+ lean-native (native)        1          1          1      (irreducible, all tie)
+ hygiene-replace             23.5       16.0       9.0    (capybaraa -32% vs baseline)
+ feat-rating  (over-build)   46.0       25.5       17.5   (capybaraa -45% vs baseline)
+```
+
+The straight read: **capybaraa cuts over-build 32–45% against the bare baseline without dropping correctness, safety, or hygiene — but ponytail is leaner still on raw line count**, and capybaraa costs a little more time and money (the price of clarifying and checking). These three tasks are pure LOC, which is ponytail's home turf; capybaraa's pitch is leanness *without* cutting safety or completeness, plus the clarify-first behavior these LOC gates don't measure. n=2, one model, treat as directional.
+
+An earlier, broader five-arm run (Haiku 4.5, n=3, [full writeup](benchmarks/results/2026-06-25-multiarm-haiku.md)) adds the clarify and tests-written dimensions, against the old two-mode build: capybaraa vs the bare baseline, ponytail, caveman, and a "follow YAGNI, prefer one-liners" arm.
 
 <p align="center">
   <img src="assets/benchmark-multiarm.svg" width="820" alt="Two panels across five arms (baseline, capybaraa, ponytail, caveman, yagni-oneliner) on Haiku 4.5. Left: lines of code on the two over-build tasks (star rating: 60/53/40/48/27; color palette: 154/135/86/143/47); yagni-oneliner is leanest, ponytail next, capybaraa moderate, caveman and baseline bulkiest. Right: CLARIFY judge score 0-3; capybaraa 2.0 and ponytail 2.0 ask first, baseline 1.5, caveman 1.0, yagni-oneliner 0.0.">
@@ -137,18 +152,15 @@ Capybaraa is a native Claude Code plugin, installed from this repo:
 ```
 (Two separate prompts.) Needs `node` on your PATH for the lifecycle hooks. Without it the skills still work, the always-on activation just stays quiet. Start a new session after installing so the skills load.
 
-## Modes
+## On / off
 
-Two modes, picked by the detail/token tradeoff. The six pillars hold in both; what changes is how much it clarifies and explains.
+One mode, always on, no dial. The depth adapts to each task via the conscious gate, so there's nothing to pick. The command only toggles it.
 
 ```
-/capybaraa lean | deep | off          "stop capybaraa" also turns it off
+/capybaraa on | off                   "stop capybaraa" also turns it off
 ```
 
-| `lean` | minimum tokens: build tight & correct, ask only what truly blocks correctness, skip ASCII unless it stops the wrong build |
-| `deep` *(default)* | a bit more tokens: full clarify-before-code, ASCII on the options, every edge case, complete-but-minimal code, strict done-gate |
-
-Neither cuts validation, security, error handling, or accessibility; `lean` saves tokens, not safety. The mode shows in your statusline as `[CAPYBARAA]` (deep) or `[CAPYBARAA:LEAN]`. Set a default for every session with `CAPYBARAA_DEFAULT_LEVEL` (`lean`/`deep`/`off`) or `defaultLevel` in `~/.config/capybaraa/config.json`. Default is `deep`.
+It never cuts validation, security, error handling, or accessibility, whatever the task size. When it's on, your statusline shows `[CAPYBARAA]`. To make `off` the default for every session, set `CAPYBARAA_DEFAULT_LEVEL=off` or `defaultState` in `~/.config/capybaraa/config.json`. Default is on. (Legacy `lean`/`deep`/`medium` values from older versions still read as on.)
 
 ## Commands
 
@@ -156,9 +168,11 @@ The six pillars are always on, there's no command to run them. Once installed, c
 
 | Command | What it does |
 |---------|--------------|
-| `/capybaraa [lean \| deep \| off]` | Pick the mode, or turn it off. No argument means deep. |
+| `/capybaraa [on \| off]` | Turn it on or off. No argument explains it and shows the current state. |
 | `/capybaraa-review` | Review the current diff against the six pillars. Lists findings, doesn't edit. |
 | `/capybaraa-audit` | Scan the whole repo against the six pillars. Ranked findings, doesn't edit. |
+| `/capybaraa-sync` | Fix drift between the code and its docs/tests/refs after a change. Lists, confirms, then updates and deletes stale. |
+| `/capybaraa-debt` | Harvest the `capybaraa:` deferral ledger (intentional simplifications). Lists, doesn't edit. |
 | `/capybaraa-help` | Quick reference card. |
 
 They're plugin skills, so they may show up namespaced as `/capybaraa:capybaraa` in the menu. Skills load at session start, so start a new session after installing.
@@ -182,7 +196,7 @@ claude plugin validate .           # validate the manifest (Claude Code CLI)
 No. Trivial asks get the rules and nothing else. The questions and the done-gate only fire when the task is big or ambiguous enough to need them.
 
 **Do I need a config file?**
-No. `CAPYBARAA_DEFAULT_LEVEL` or `~/.config/capybaraa/config.json` can set a default mode, but nothing is required.
+No. `CAPYBARAA_DEFAULT_LEVEL` or `~/.config/capybaraa/config.json` can set whether it starts on or off, but nothing is required.
 
 **Why a capybaraa?**
 Calmest animal alive, gets along with everything, wastes zero energy. You already knew.

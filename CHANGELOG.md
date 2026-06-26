@@ -3,6 +3,39 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [0.3.0] - 2026-06-25
+
+- **One mode, no dial.** `lean`/`deep` are gone. Capybaraa is now a single always-on
+  mode whose depth adapts to the task: a trivial ask gets the rules and nothing else, a
+  real feature or hard bug earns the full clarify-before-code treatment. State is just
+  `on`/`off`. `/capybaraa on|off`; legacy flags/env (`deep`, `lean`, `medium`) map to
+  `on` so existing installs keep working. Statusline shows `[CAPYBARAA]`, badge is
+  `🦫 capybaraa` (no mode suffix).
+- **Conscious token gate.** A new reflex in front of the six pillars: before any
+  token-expensive move (deep exploration, spawning subagents, a full clarify ceremony,
+  long output), check that the spend is proportional. Small task: just do it. Scope
+  unclear and a wrong guess is costly: ask one sharp question first instead of bursting
+  tokens. Resolves "have everything" vs "don't waste".
+- **Fixed a real bug: substring command matching.** Deactivation and command parsing
+  matched the phrase *anywhere* in a message, so a message that merely quoted "stop
+  capybaraa" or "normal mode" silently turned it off. Commands now require a whole-message
+  match (root-cause fix, with regression checks in the smoke test).
+- **Pillars broadened beyond coding** (new projects, existing code, bug-clearing,
+  research, ops, writing) and framed as the antidotes to how a stock agent fails, with
+  sharper root-cause guidance (fix the shared cause once, not the one symptom path).
+- **New `/capybaraa-debt` skill + `capybaraa:` marker convention.** Intentional
+  simplifications get a `capybaraa:` comment naming the ceiling and upgrade trigger; the
+  skill harvests them into a ledger and flags the no-trigger ones as highest rot risk.
+- **Sync is part of done + new `/capybaraa-sync` skill.** The COMPLETE pillar now treats a
+  change as unfinished until the docs, comments, tests, sibling code, and version strings
+  that referenced the old shape are updated and the stale ones deleted (confirming before
+  large or risky propagation). `/capybaraa-sync` runs that drift sweep across the whole
+  repo on demand: lists each gap, confirms, then updates and removes stale.
+- **Note on benchmarks.** The dated `benchmarks/results/*.md` files predate this change
+  and still describe the `deep` arm; they record past runs and are left as-is. The
+  harness (`benchmarks/prompts.js`, `benchmarks/agentic/run.py`) is updated to the single
+  mode.
+
 ## [0.2.4] - 2026-06-25
 
 - **Two modes instead of three levels.** `low`/`medium`/`high` are replaced by two

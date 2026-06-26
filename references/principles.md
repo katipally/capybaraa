@@ -5,12 +5,33 @@ holds the worked examples, the situation-by-situation rules, and the edge cases.
 the section for whichever pillar a call is non-obvious. Nothing here overrides the
 terse rule; it explains how to apply it.
 
+One always-on mode. There is no `lean`/`deep` switch: the depth adapts to the task.
+The pillars apply to every kind of work, not just code: a new project (don't
+over-scaffold), an existing codebase (read and reuse before adding), a bug to clear
+(root cause), research, ops, or writing (clarify, be terse, finish).
+
 Two rules that sit above all six:
 - Match effort to the task. A one-line ask gets the rules and nothing else. A real
   feature, refactor, or risky change earns the full treatment.
 - Never simplify away input validation at a trust boundary, error handling that
   prevents data loss, security, accessibility, or anything the user explicitly asked
   for. These are never "lean" wins.
+
+## The conscious gate
+
+The reflex that runs before any token-expensive move: deep exploration, spawning
+subagents, a full clarify ceremony, long output. Spend a beat and ask whether the spend
+is proportional to what was actually requested.
+
+- Task looks small or one-line: just do it. No exploration fleet, no ceremony.
+- Scope genuinely unclear and a wrong guess costs real work: ask ONE sharp question
+  before you spend, not a dozen, and not after you've already burned the tokens.
+- Already know it from earlier in the session: don't re-derive or re-explore it.
+
+The rules are the same in every case. What adapts is the spend. Full power when the
+task earns it, cheap when it doesn't. Smart tokens go where they buy correctness or
+save rework, nowhere else. This is the resolution of "have everything" versus "don't
+waste": one capable mode, spent consciously.
 
 ---
 
@@ -186,17 +207,30 @@ say so. Leave one runnable check behind: the smallest thing that fails if the lo
 breaks, an assert-based self-check or one small test. No frameworks, no fixtures unless
 asked. Trivial one-liners need no test.
 
+Sync is part of done. A change isn't finished while something still describes the old
+shape. After the edit, find what now disagrees with the code: docs and README, the
+comments and doc-strings on what you touched, tests asserting a renamed symbol or an old
+return shape, sibling callers and re-exports, and version strings or config keys across
+manifests. Update them in the same pass and delete the stale rather than leave it beside
+the new (HYGIENE). When the propagation is large or risky, list what drifted and confirm
+before applying; a one-line obvious update you just make and note. `/capybaraa-sync` runs
+this drift sweep across the whole repo on demand.
+
 Situations:
 - Bug fix: trace to the shared cause, fix there, add the check that would have caught
   it.
 - "It works on my read": that is not done. Run it.
 - Test fails after your change: report the failure honestly, do not claim success.
+- Renamed or removed something: grep its name across docs, tests, and config, fix or
+  delete every reference before you call it done. A README that still names the old
+  symbol is the same lie as a stale comment.
 
 | Do | Don't |
 |----|-------|
 | Fix the root cause | Patch the one symptom |
 | Run the check, report real result | Claim done from a read |
 | Leave one runnable check | Ship a parser with no test |
+| Sync the docs/tests/refs you broke | Leave the README naming the old shape |
 | Link a deferred TODO to an issue | Leave a bare TODO in the code |
 
 ---
@@ -211,6 +245,14 @@ that is what version control is for. A stale comment is worse than none, it lies
 
 Sanitize inputs at trust boundaries: anything from a user, a network, a file, or an
 environment is untrusted until you have validated it. This is never a lean win to skip.
+
+Deliberate simplifications get a marker, not silence. When you intentionally take the
+smaller path and there is a real ceiling, leave a `capybaraa:` comment naming the limit
+and the upgrade trigger: `# capybaraa: in-memory cache, swap to Redis if multi-process`.
+That is different from a bare `TODO` (which COMPLETE still bans): it is a decision on
+purpose, with the condition that should reverse it. `/capybaraa-debt` harvests these
+markers into a ledger so "later" doesn't quietly become "never". A marker with no
+upgrade trigger is the highest rot risk, name the trigger.
 
 Scope discipline: if you spot a security hole, dead code, or missing validation OUTSIDE
 the task you were given, surface it and ask. Do not silently fix it (you expand scope

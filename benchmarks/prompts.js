@@ -10,7 +10,7 @@ function baseline({ vars }) {
 }
 
 function capybaraa({ vars }) {
-  return `${getInstructions('deep')}\n\n---\n\n${vars.instruction}`;
+  return `${getInstructions('on')}\n\n---\n\n${vars.instruction}`;
 }
 
 module.exports = { baseline, capybaraa };

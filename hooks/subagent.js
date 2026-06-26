@@ -2,9 +2,9 @@
 // SubagentStart: carry the principles into spawned subagents so they stay on-brand.
 'use strict';
 
-const { getLevel, writeHookOutput } = require('./config.js');
+const { getState, writeHookOutput } = require('./config.js');
 const { getInstructions } = require('../principles/build-instructions.js');
 
-const level = getLevel();
-if (level !== 'off') writeHookOutput('SubagentStart', getInstructions(level));
+const state = getState();
+if (state !== 'off') writeHookOutput('SubagentStart', getInstructions(state));
 process.exit(0);
