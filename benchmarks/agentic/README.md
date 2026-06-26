@@ -123,6 +123,7 @@ the plugin's value, not only confirm it.
 
 ## Results
 
-Latest: [`../results/2026-06-25-sonnet-0.4.0.md`](../results/2026-06-25-sonnet-0.4.0.md) (Sonnet
-4.6, 3 runs). Write each run up under `../results/` dated, with the per-task table; only paste
-numbers into the top-level README once you have actually run it.
+Latest: [`../results/2026-06-26-sonnet-0.4.2.md`](../results/2026-06-26-sonnet-0.4.2.md) (Sonnet
+4.6, focused clean run, n=3); the broader [0.4.0 run](../results/2026-06-25-sonnet-0.4.0.md)
+covers the deterministic gates. Write each run up under `../results/` dated, with the per-task
+table; only paste numbers into the top-level README once you have actually run it.

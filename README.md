@@ -24,7 +24,7 @@ It's the half of "good engineering" that agents skip: think before you type, the
 
 The ticket: "add user settings persistence."
 
-Claude can already ask good questions here, that's what plan mode is for. But in a plain run it tends to guess the whole spec and build it. In our benchmark the bare agent did exactly that: handed this ticket, it invented theme, font size, six languages, and notification toggles, wrote ~238 lines, and reported "done", none of them the settings you'd actually have chosen.
+Claude can already ask good questions here, that's what plan mode is for. But in a plain run it tends to guess the spec and start building, and you find out it guessed wrong once it is written. (In our benchmark, on tickets like this the bare agent scored 0 of 3 for asking the questions that decide the design; capybaraa scored 1.0.)
 
 **Capybaraa makes asking-first the default**, even outside plan mode, and sharpens it: it goes straight to the few questions that actually decide the design and draws the choices so the tradeoff is obvious at a glance:
 
@@ -104,19 +104,22 @@ If you do not see the 🦫 badge, capybaraa is off (or the session predates inst
 
 Yes, and we measured it instead of asserting it. The [agentic benchmark](benchmarks/agentic/) runs real headless Claude Code sessions (`claude -p`) in throwaway workspaces and compares **capybaraa against the bare agent with no plugin**, one task per pillar. Same model, same task, the only difference is whether capybaraa is on, so any gap is the plugin.
 
-**Sonnet 4.6, 3 runs per cell.** Three things came out of it:
+**Sonnet 4.6, 3 runs per task.** Three things came out of it:
 
 <p align="center">
-  <img src="assets/benchmark.svg" width="720" alt="Two charts. Top: median lines of code per task, baseline vs capybaraa, lower is leaner. Star rating 38 vs 23 (-39%), CSV export 20 vs 15 (-25%), Cmd-K palette 89 vs 78 (-12%), rewrite CSV parser 17 vs 16 (-6%), fix failing test 4 vs 2 (-50%); every one scored fully complete 3 of 3. Bottom: CLARIFY judge 0 to 3, baseline 0 of 3, capybaraa 1.5 of 3; baseline invented the spec and built about 238 lines unprompted while capybaraa wrote 0 lines and asked first; the 9 deterministic gates are 100% for both.">
+  <img src="assets/benchmark.svg" width="720" alt="Two charts. Top: median lines of code per feature task, baseline vs capybaraa, lower is leaner. Star rating 33 vs 29 (-12%), CSV export 20 vs 16 (-20%); both scored fully complete 3 of 3. Bottom: CLARIFY judge 0 to 3, baseline 0.0, capybaraa 1.0; baseline guessed the spec and built it while capybaraa asked the deciding questions first. Separately, the 9 deterministic gates are 100% for both.">
 </p>
 
-**1. It asks more often.** This is a plain non-interactive run (`claude -p`, no plan mode), so it shows what each agent does *by default*. Handed an underspecified ticket ("add user settings persistence to this app"), the bare agent guessed the whole spec and built it, in one run **inventing theme, font size, six languages, and notification toggles and writing ~238 lines** nobody had asked for. Capybaraa wrote **zero lines and asked the questions first**. On the CLARIFY judge (0-3, graded by a separate model with no plugin loaded) capybaraa scored **1.5 vs the baseline's 0**. The agent can already clarify in plan mode; capybaraa is what makes it do so by default.
+**1. It asks before it guesses.** This is a plain run (`claude -p`, no plan mode), so it shows the *default* behavior. Handed a vague ticket ("add user settings persistence"), the bare agent guessed the spec and started building; capybaraa stopped and asked which settings, stored where, per-device or synced. On the CLARIFY judge (0-3, graded by a separate model with no plugin loaded) capybaraa scored **1.0 vs the baseline's 0.0**.
+*What that means for you:* you answer two quick questions now, instead of reviewing a feature it guessed wrong, deleting it, and re-explaining what you actually wanted. One round, not three. (Claude can already do this in plan mode; capybaraa makes it the default.)
 
-**2. It builds the same feature with less code.** On five tasks where there was real room to be leaner, capybaraa was **6-50% smaller** (a star-rating widget: 23 lines vs 38). Crucially, the completeness judge scored **every one fully complete, 3/3, for both arms**, so this is leaner, not less. It does cost a little more time and money per task, the price of asking and running the check.
+**2. It builds the same feature with less code.** On the feature tasks capybaraa came in **12-20% smaller** (a star-rating widget in 29 lines instead of 33, a CSV export in 16 instead of 20), and the completeness judge scored **both arms fully complete, 3/3**, so it is leaner, not less.
+*What that means for you:* a couple dozen fewer lines on each feature is less to read in review, fewer places a bug can hide, and less code your team owns forever. On a vague ticket it is often cheaper too (it asks instead of building the wrong thing); on a clear one it costs a little more, the price of running the check.
 
-**3. It never traded that for correctness.** On the nine deterministic gates (correct, safe, reuse a helper, use the native input, right data structure, no filler comments, keep docs in sync, replace not pile-on, run the test), **both arms passed 100%**. With a strong model the bare agent already nails these surgical tasks, and capybaraa holds that ceiling while adding the asking and the leanness on top.
+**3. It never gets there by cutting corners.** In the broader run, all **nine deterministic gates** (correctness, safety, reuse, native features, the right data structure, no filler comments, docs kept in sync, replace-not-pile-on, ran the test) passed **100% for both arms**.
+*What that means for you:* "leaner" only ever means fewer lines you did not need. No validation, safety check, or error handling is dropped to hit a smaller number.
 
-The honest caveats: a handful of tasks on one model, so read it as directional, not a leaderboard. The CLARIFY tier leans on an LLM judge (made auditable: fixed model, published rubric, every verdict lists what was asked and missed), and a deterministic safety check is a floor, not a security proof.
+Honest caveats: a small task set on one model, so read it as directional, not a leaderboard, and the size of the code saving swings a lot by task (near zero on already-minimal code, much larger on a real over-build trap). The CLARIFY score is an LLM judge (auditable: fixed model, published rubric, every verdict lists what was asked and missed), and a deterministic safety check is a floor, not a security proof.
 
 ### Run it yourself
 

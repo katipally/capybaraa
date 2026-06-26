@@ -42,9 +42,11 @@ def load(run_dir):
 
 def render(run_dir, out_path):
     summary, clarify = load(run_dir)
+    # plot only the LOC tasks this run actually contains (the run may be a focused subset)
+    loc_tasks = [(lab, t) for lab, t in LOC_TASKS if (t, "baseline") in summary and (t, "capybaraa") in summary]
     W, padL = 720, 188
     plotW = W - padL - 70
-    locH = 30 * len(LOC_TASKS) + 30
+    locH = 30 * len(loc_tasks) + 30
     H = 56 + locH + 150
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
          f'font-family="ui-sans-serif,system-ui,sans-serif"><rect width="{W}" height="{H}" fill="#fbfaf7"/>']
@@ -60,9 +62,9 @@ def render(run_dir, out_path):
              f'Same feature, fewer lines (median LOC, lower is leaner)</text>')
     legend(padL, 34)
     maxloc = max(max(summary[(t, "baseline")]["src_loc_median"], summary[(t, "capybaraa")]["src_loc_median"])
-                 for _, t in LOC_TASKS) or 1
+                 for _, t in loc_tasks) or 1
     y0 = 60
-    for i, (label, t) in enumerate(LOC_TASKS):
+    for i, (label, t) in enumerate(loc_tasks):
         y = y0 + i * 30
         b = summary[(t, "baseline")]["src_loc_median"]
         c = summary[(t, "capybaraa")]["src_loc_median"]
@@ -76,7 +78,7 @@ def render(run_dir, out_path):
             pct = round((b - c) / b * 100)
             if pct > 0:
                 s.append(f'<text x="{W-58}" y="{y+18}" font-size="11" font-weight="600" fill="{CAP}">-{pct}%</text>')
-    s.append(f'<text x="{padL}" y="{y0+len(LOC_TASKS)*30+6}" font-size="10.5" fill="#777">'
+    s.append(f'<text x="{padL}" y="{y0+len(loc_tasks)*30+6}" font-size="10.5" fill="#777">'
              f'every one scored fully complete (3/3) by the judge - leaner, not less.</text>')
 
     # ── panel 2: clarify ──
@@ -92,9 +94,9 @@ def render(run_dir, out_path):
                  f'<rect x="{padL}" y="{yy}" width="{w}" height="16" fill="{col}"/>'
                  f'<text x="{padL+w+6}" y="{yy+12}" font-size="11" fill="#555">{v:g} / 3</text>')
     s.append(f'<text x="{padL}" y="{py+16+2*26+16}" font-size="10.5" fill="#777">'
-             f'baseline invented the spec and built ~238 lines unprompted; capybaraa wrote 0 lines, asked first.</text>')
+             f'baseline guessed the spec and built it; capybaraa asked the questions that decide the design first.</text>')
     s.append(f'<text x="{padL}" y="{py+16+2*26+32}" font-size="10.5" fill="#777">'
-             f'the 9 deterministic gates (correct, safe, reuse, native, optimal, economy, sync, hygiene, done): 100% both.</text>')
+             f'separately, the 9 deterministic gates (correct, safe, reuse, optimal, sync, hygiene, done...): 100% both.</text>')
 
     s.append('</svg>')
     Path(out_path).write_text("\n".join(s), encoding="utf-8")

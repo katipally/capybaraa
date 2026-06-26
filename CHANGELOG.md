@@ -3,6 +3,21 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [0.4.2] - 2026-06-26
+
+- **Fresh, honest benchmark numbers.** Re-ran a small focused batch (4 tasks, n=3, clean,
+  no rate-limit hits) to get defensible values. The README now claims what reproduces: on
+  the CLARIFY judge capybaraa **1.0 vs baseline 0.0** (asks the spec-deciding questions by
+  default), and **12-20% less code** on the feature tasks (star widget 29 vs 33, CSV export
+  16 vs 20), both fully complete (3/3). Dropped the earlier headline -39% / "~238 lines"
+  figures: real but the high end of run-to-run variance, not typical. The nine deterministic
+  gates (100% both) carry over from the broader 0.4.0 run. Writeup:
+  `benchmarks/results/2026-06-26-sonnet-0.4.2.md`; chart regenerated.
+- **Claims rewritten for the reader.** Each benchmark result now spells out what it means for
+  you (answer two questions now instead of deleting a wrong guess later; a couple dozen fewer
+  lines to read, review, and own; leaner never means a dropped safety check), not just a
+  percentage. `chart.py` now plots whatever task subset a run contains.
+
 ## [0.4.1] - 2026-06-25
 
 - **CLARIFY reframed as an improvement layer, not a missing ability.** Claude already
