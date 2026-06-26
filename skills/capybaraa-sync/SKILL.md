@@ -11,13 +11,13 @@ license: MIT
 
 # Capybaraa Sync
 
-A change isn't done until everything that referenced the old shape catches up (COMPLETE
-pillar). This skill sweeps the repo for that drift and closes it, so the codebase stays
+A change isn't done until everything that referenced the old shape catches up (the SYNC
+habit). This skill sweeps the repo for that drift and closes it, so the codebase stays
 coherent without the user having to chase every reference by hand. It is the deliberate,
 whole-repo version of the always-on reflex; `/capybaraa-review` and `/capybaraa-audit`
 judge quality, this one fixes coherence.
 
-Detailed guidance: [`references/principles.md`](../../references/principles.md) (COMPLETE, HYGIENE).
+Detailed guidance: [`references/principles.md`](../../references/principles.md) (SYNC, CLEAN).
 
 ## How to run it
 
@@ -39,7 +39,7 @@ Detailed guidance: [`references/principles.md`](../../references/principles.md) 
    one-line obvious propagation, just do it and note it; the confirm is for the big or
    risky sweeps.
 5. Apply in one pass: update the live references, **delete** the stale ones (don't leave
-   the old line beside the new - HYGIENE), and re-run the repo's check if one exists.
+   the old line beside the new - CLEAN), and re-run the repo's check if one exists.
 6. End with a one-line tally: `N references synced, M stale removed.` or
    `In sync. Nothing drifted.`
 
@@ -58,6 +58,6 @@ verdict: 4 references drift. Apply? (3 updates, 1 deletion)
 Coherence only: it makes the docs/tests/refs agree with the code, it does not redesign or
 add features. It will delete stale text and dead references it can prove are orphaned by
 the change, after confirming. It does not invent new docs the repo never had, and it does
-not touch out-of-scope code unrelated to the change (that's a HYGIENE "surface and ask",
+not touch out-of-scope code unrelated to the change (surface and ask,
 not a silent edit). Correctness bugs and over-engineering stay with `/capybaraa-review`
 and `/capybaraa-audit`.

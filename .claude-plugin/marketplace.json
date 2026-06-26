@@ -1,12 +1,12 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "capybaraa",
-  "description": "Calm senior-dev coding principles that clarify before code.",
+  "description": "Lean senior-dev mode: ponytail's discipline plus better questions, ASCII sketches, and a real sync.",
   "owner": { "name": "Yashwanth Reddy", "url": "https://github.com/katipally" },
   "plugins": [
     {
       "name": "capybaraa",
-      "description": "Seven pillars (clarify, lean, optimal, economy, complete, hygiene, sync) plus a conscious token gate, always-on via hooks; slash commands /capybaraa, /capybaraa-review, /capybaraa-audit, /capybaraa-sync, and /capybaraa-help.",
+      "description": "Ponytail's lean ladder plus five habits (ask with ASCII, optimal, terse, clean, sync), always-on via hooks; slash commands /capybaraa, /capybaraa-review, /capybaraa-audit, /capybaraa-sync, and /capybaraa-help.",
       "version": "0.4.2",
       "category": "development",
       "keywords": ["planning", "yagni", "minimalism", "code-quality"],

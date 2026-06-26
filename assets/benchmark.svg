@@ -1,21 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="296" font-family="ui-sans-serif,system-ui,sans-serif"><rect width="720" height="296" fill="#fbfaf7"/>
-<text x="188" y="26" font-size="15" font-weight="700" fill="#3a3226">Same feature, fewer lines (median LOC, lower is leaner)</text>
-<rect x="188" y="34" width="12" height="12" fill="#c9c2b6"/><text x="205" y="45" font-size="12" fill="#555">baseline</text>
-<rect x="283" y="34" width="12" height="12" fill="#8a6d3b"/><text x="300" y="45" font-size="12" fill="#555">capybaraa</text>
-<text x="178" y="78" font-size="11.5" text-anchor="end" fill="#3a3226">feature: star rating</text>
-<rect x="188" y="62" width="462" height="11" fill="#c9c2b6"/><text x="655" y="72" font-size="10" fill="#888">33</text>
-<rect x="188" y="75" width="406" height="11" fill="#8a6d3b"/><text x="599" y="85" font-size="10" fill="#888">29</text>
-<text x="662" y="78" font-size="11" font-weight="600" fill="#8a6d3b">-12%</text>
-<text x="178" y="108" font-size="11.5" text-anchor="end" fill="#3a3226">feature: CSV export</text>
-<rect x="188" y="92" width="280" height="11" fill="#c9c2b6"/><text x="473" y="102" font-size="10" fill="#888">20</text>
-<rect x="188" y="105" width="224" height="11" fill="#8a6d3b"/><text x="417" y="115" font-size="10" fill="#888">16</text>
-<text x="662" y="108" font-size="11" font-weight="600" fill="#8a6d3b">-20%</text>
-<text x="188" y="126" font-size="10.5" fill="#777">every one scored fully complete (3/3) by the judge - leaner, not less.</text>
-<text x="188" y="176" font-size="15" font-weight="700" fill="#3a3226">Asks before coding (CLARIFY judge 0-3, higher is better)</text>
-<text x="178" y="204" font-size="11.5" text-anchor="end" fill="#3a3226">baseline</text>
-<rect x="188" y="192" width="462" height="16" fill="#efece5"/><rect x="188" y="192" width="2" height="16" fill="#c9c2b6"/><text x="196" y="204" font-size="11" fill="#555">0 / 3</text>
-<text x="178" y="230" font-size="11.5" text-anchor="end" fill="#3a3226">capybaraa</text>
-<rect x="188" y="218" width="462" height="16" fill="#efece5"/><rect x="188" y="218" width="154" height="16" fill="#8a6d3b"/><text x="348" y="230" font-size="11" fill="#555">1 / 3</text>
-<text x="188" y="260" font-size="10.5" fill="#777">baseline guessed the spec and built it; capybaraa asked the questions that decide the design first.</text>
-<text x="188" y="276" font-size="10.5" fill="#777">separately, the 9 deterministic gates (correct, safe, reuse, optimal, sync, hygiene, done...): 100% both.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="400" font-family="ui-sans-serif,system-ui,sans-serif"><rect width="720" height="400" fill="#fbfaf7"/>
+<text x="150" y="24" font-size="15" font-weight="700" fill="#3a3226">Same features, percent of the bare baseline (lower is leaner / cheaper / faster)</text>
+<rect x="150" y="36" width="11" height="11" fill="#c9c2b6"/><text x="165" y="46" font-size="11.5" fill="#555">baseline</text>
+<rect x="241.6" y="36" width="11" height="11" fill="#b07a4a"/><text x="256.6" y="46" font-size="11.5" fill="#555">caveman</text>
+<rect x="326.0" y="36" width="11" height="11" fill="#111111"/><text x="341.0" y="46" font-size="11.5" fill="#555">ponytail</text>
+<rect x="417.6" y="36" width="11" height="11" fill="#8a6d3b"/><text x="432.6" y="46" font-size="11.5" fill="#555">capybaraa</text>
+<text x="140" y="77" font-size="11.5" text-anchor="end" font-weight="600" fill="#3a3226">lines of code</text>
+<rect x="150" y="64" width="408.0" height="10" fill="#c9c2b6"/>
+<text x="563.0" y="73" font-size="9.5" text-anchor="start" fill="#777">100% (base)</text>
+<rect x="150" y="77" width="403.8" height="10" fill="#b07a4a"/>
+<text x="558.8" y="86" font-size="9.5" text-anchor="start" fill="#777">99%</text>
+<rect x="150" y="90" width="174.1" height="10" fill="#111111"/>
+<text x="329.1" y="99" font-size="9.5" text-anchor="start" fill="#777">43%</text>
+<rect x="150" y="103" width="281.3" height="10" fill="#8a6d3b"/>
+<text x="436.3" y="112" font-size="9.5" text-anchor="start" fill="#777">69%</text>
+<text x="140" y="147" font-size="11.5" text-anchor="end" font-weight="600" fill="#3a3226">output tokens</text>
+<rect x="150" y="134" width="408.0" height="10" fill="#c9c2b6"/>
+<text x="563.0" y="143" font-size="9.5" text-anchor="start" fill="#777">100% (base)</text>
+<rect x="150" y="147" width="386.1" height="10" fill="#b07a4a"/>
+<text x="541.1" y="156" font-size="9.5" text-anchor="start" fill="#777">95%</text>
+<rect x="150" y="160" width="306.6" height="10" fill="#111111"/>
+<text x="461.6" y="169" font-size="9.5" text-anchor="start" fill="#777">75%</text>
+<rect x="150" y="173" width="365.4" height="10" fill="#8a6d3b"/>
+<text x="520.4" y="182" font-size="9.5" text-anchor="start" fill="#777">90%</text>
+<text x="140" y="217" font-size="11.5" text-anchor="end" font-weight="600" fill="#3a3226">cost</text>
+<rect x="150" y="204" width="408.0" height="10" fill="#c9c2b6"/>
+<text x="563.0" y="213" font-size="9.5" text-anchor="start" fill="#777">100% (base)</text>
+<rect x="150" y="217" width="409.6" height="10" fill="#b07a4a"/>
+<text x="564.6" y="226" font-size="9.5" text-anchor="start" fill="#777">100%</text>
+<rect x="150" y="230" width="422.8" height="10" fill="#111111"/>
+<text x="577.8" y="239" font-size="9.5" text-anchor="start" fill="#777">104%</text>
+<rect x="150" y="243" width="426.6" height="10" fill="#8a6d3b"/>
+<text x="581.6" y="252" font-size="9.5" text-anchor="start" fill="#777">105%</text>
+<text x="140" y="287" font-size="11.5" text-anchor="end" font-weight="600" fill="#3a3226">wall time</text>
+<rect x="150" y="274" width="408.0" height="10" fill="#c9c2b6"/>
+<text x="563.0" y="283" font-size="9.5" text-anchor="start" fill="#777">100% (base)</text>
+<rect x="150" y="287" width="378.4" height="10" fill="#b07a4a"/>
+<text x="533.4" y="296" font-size="9.5" text-anchor="start" fill="#777">93%</text>
+<rect x="150" y="300" width="381.5" height="10" fill="#111111"/>
+<text x="536.5" y="309" font-size="9.5" text-anchor="start" fill="#777">94%</text>
+<rect x="150" y="313" width="401.2" height="10" fill="#8a6d3b"/>
+<text x="556.2" y="322" font-size="9.5" text-anchor="start" fill="#777">98%</text>
+<line x1="558.0" y1="60" x2="558.0" y2="326" stroke="#bbada0" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="150" y="348" font-size="10.5" fill="#777">baseline totals over 3 tasks: 146.5 LOC, 3439 output tokens, $0.301, 66s. all arms scored 3/3 complete.</text>
+<text x="150" y="364" font-size="10.5" fill="#777">capybaraa: fewer output tokens and less code than the bare agent, fully complete. directional: sonnet, n=2.</text>
 </svg>

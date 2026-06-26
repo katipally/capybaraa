@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [Unreleased]
+
+- **The ruleset is now lean, and so are the numbers.** The injected core was ~1,500 tokens of
+  seven-pillar prose plus a badge-and-sign-off ceremony every turn, which made capybaraa tie a
+  bare agent on output tokens and cost ~16% more. Rewrote it to ponytail size: the lean ladder
+  plus five habits (ASK with an ASCII sketch, OPTIMAL, TERSE, CLEAN, SYNC), a safety floor, a
+  one-glyph `🦫` badge, **no sign-off and no done-gate** (~440 tokens, a 70% cut). Capybaraa now
+  spends **~10% fewer output tokens** and writes **~30% less code** than the bare agent, fully
+  complete (3/3); cost is +5%, the small plugin tax even ponytail pays. Writeup:
+  `benchmarks/results/2026-06-26-sonnet-lean.md`.
+- **Benchmark dropped the clarify panel, added the peer arms.** The headline run is now four arms
+  (baseline, caveman, ponytail, capybaraa) on clear build tasks, charted ponytail-style as percent
+  of baseline for LOC, output tokens, cost, and time. caveman ships vendored (MIT) as a prompt arm;
+  ponytail loads as a real plugin. `chart.py` is one grouped-bar panel; the CLARIFY panel is gone.
+- **Synced the lean identity everywhere.** Rewrote `principles/build-instructions.js`,
+  `references/principles.md`, all five skills (tags are now ask/lean/optimal/terse/clean/sync, the
+  deferral ledger is removed), the manifests, the README, and the smoke test to the ladder-plus-five-habits
+  model. The ASK behavior (questions plus ASCII on an ambiguous ticket) stays; it is just not the
+  benchmarked headline anymore.
+
 ## [0.4.2] - 2026-06-26
 
 - **Fresh, honest benchmark numbers.** Re-ran a small focused batch (4 tasks, n=3, clean,

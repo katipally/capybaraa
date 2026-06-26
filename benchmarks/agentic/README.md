@@ -16,37 +16,52 @@ This benchmark measures the behavior. Every cell is a **real headless Claude Cod
 | unit | one prompt to one completion | a Claude Code session in a temp workspace |
 | baseline | bare model, prepended text | the **real agent** with no plugin (the fair baseline) |
 | activation | text prepend | the **actual SessionStart hook** via `--plugin-dir` |
-| measures | LOC + correctness | clarify, lean, optimal, economy, hygiene, sync, done-gate, safety |
+| measures | LOC + correctness | LOC, output tokens, cost, time, completeness, plus per-behavior tiers (ask, lean, optimal, terse, clean, sync, safety) |
 
 ## Arms
 
-The headline comparison is **capybaraa vs the bare baseline** - nothing else. Three kinds:
-`bare` (the unaided agent, the only thing capybaraa is scored against), `plugin` (capybaraa
-itself, loaded via `--plugin-dir`), and `prompt` (a generic one-line instruction, an optional
-reference point, not part of the headline read). Available:
+The honest comparison puts capybaraa next to its peers, each loaded the way it actually ships,
+all measured against the **bare baseline**. Three kinds:
 
-`baseline` / `regular` (bare) · `capybaraa` (plugin, **on**) · `yagni` · `yagni-oneliner` ·
-`concise` (prompt).
+- `bare` - the unaided agent, the reference everything is scored against.
+- `plugin` - a SessionStart-hook plugin loaded via `--plugin-dir`. `capybaraa` resolves to this
+  repo (override with `CAPYBARAA_PLUGIN_DIR`) and pins its activation flag on for the run;
+  `ponytail` resolves to the installed plugin cache (override with `PONYTAIL_PLUGIN_DIR`) and is
+  active by default on load, so it carries no flag.
+- `prompt` - a system-prompt instruction via `--append-system-prompt`. `caveman` is benchmarked
+  this way because it ships as a skill, not a plugin; its SKILL is vendored at `caveman-SKILL.md`
+  (MIT) and loaded as the system prompt, matching how ponytail benchmarks its own caveman control.
+  `yagni` / `yagni-oneliner` / `concise` are one-line reference instructions.
 
-Default `--arms` is `baseline,capybaraa`. The prompt arms are honest controls: if a one-line
-instruction matches the plugin on some axis, the benchmark should show it. capybaraa resolves
-to this repo (override with `CAPYBARAA_PLUGIN_DIR`).
+Available: `baseline` / `regular` (bare) · `capybaraa` (plugin, **on**) · `ponytail` (plugin) ·
+`caveman` (prompt, vendored) · `yagni` · `yagni-oneliner` · `concise` (prompt).
+
+Default `--arms` is `baseline,capybaraa`. The four-arm headline run is
+`baseline,caveman,ponytail,capybaraa`. caveman is the key control: if the win were just
+"talk less," caveman (a pure prose-compression skill) would match capybaraa. It does not.
+
+**Prereq for the peer arms:** ponytail must be installed (`/plugin install ponytail`) or
+`PONYTAIL_PLUGIN_DIR` exported; caveman needs nothing, it is vendored. A plugin arm that cannot
+be resolved fails the run early rather than silently degrading to baseline.
 
 ## Isolation (why the baseline is trustworthy)
 
-Capybaraa activates from a `SessionStart` hook. If that hook fires on every arm, the baseline
-is secretly running capybaraa and the whole comparison is contaminated. Three guards:
+Capybaraa and ponytail activate from a `SessionStart` hook. If a hook fires on every arm, the
+baseline is secretly running a plugin and the whole comparison is contaminated. The guards:
 
 1. `--setting-sources project,local` excludes the user's globally-installed plugins from
-   every arm.
-2. only the `capybaraa` arm gets `--plugin-dir <repo>`, loading exactly this plugin.
-3. every cell gets its **own** `CLAUDE_CONFIG_DIR`, so a stale `off` flag in your real
-   `~/.claude/.capybaraa-active` cannot neuter the treatment. The capybaraa arm runs with
-   `CAPYBARAA_DEFAULT_LEVEL=on`.
+   every arm, so nothing loads that an arm didn't ask for.
+2. each `plugin` arm gets `--plugin-dir <dir>` for **exactly its own** plugin (capybaraa's repo,
+   or ponytail's installed cache); bare and prompt arms get none.
+3. for the run, the capybaraa arm's flag (`~/.claude/.capybaraa-active`) is pinned `on` and
+   `CAPYBARAA_DEFAULT_LEVEL=on` is set, so a stale `off` in your real config cannot neuter the
+   treatment; the original flag is restored when the run finishes. ponytail and caveman are
+   active by default, so they need no pin.
 
-Each cell records an `activated` field read back from its isolated flag file: the `capybaraa`
-arm should show `on`, the others empty. That is the proof the hook fired for the right arm
-and only that arm.
+The capybaraa arm records an `activated` field read back from its flag (`on`); the others are
+empty (ponytail/caveman activation is confirmed behaviorally instead, by their output differing
+from baseline, which the smoke run checks before any full matrix). That is the proof each arm
+ran as itself and not as the baseline.
 
 ## Tasks (covering every pillar)
 
@@ -90,13 +105,18 @@ cd benchmarks/agentic
 python3 run.py --selftest            # prove the instruments, no API. run first.
 python3 judge.py --selftest-offline  # prove the judge gate logic, no API
 
-# live (spends API), all tasks, baseline vs capybaraa, Haiku, 3 runs each:
-python3 run.py --all --arms baseline,capybaraa --models haiku --runs 3 --workers 6
-python3 judge.py --run runs/<stamp>  # score the CLARIFY tier
+# live (spends API). the four-arm headline run, two batches kept separate:
+#   build axis (everyone builds; LOC / tokens / cost / time / completeness):
+python3 run.py --task feat-rating,feat-export --arms baseline,caveman,ponytail,capybaraa --models sonnet --runs 2
+python3 judge.py --complete-run runs/<build-stamp>
+#   clarify axis (ambiguous; who asks vs guesses). caveman dropped, it is a prose skill:
+python3 run.py --task clarify-settings,clarify-export --arms baseline,ponytail,capybaraa --models sonnet --runs 2
+python3 judge.py --run runs/<clarify-stamp>
 
-python3 judge.py --complete-run runs/<stamp>  # completeness of the open feature tasks
-python3 run.py --rescore runs/<stamp>   # recompute deterministic metrics offline, no API
-python3 chart.py runs/<stamp> ../../assets/benchmark.svg   # redraw the README chart from the run
+# fold the clarify scores into the build run, then draw the chart:
+cp runs/<clarify-stamp>/clarify.json runs/<build-stamp>/clarify.json
+python3 run.py --rescore runs/<build-stamp>   # recompute deterministic metrics offline, no API
+python3 chart.py runs/<build-stamp> ../../assets/benchmark.svg   # redraw the README chart
 ```
 
 Agents only write code: `--strict-mcp-config` removes the browser, and `Bash` is blocked
@@ -114,16 +134,18 @@ the plugin's value, not only confirm it.
 
 ## What this can and cannot show
 
-- It **can** show, on real multi-file sessions, whether capybaraa asks before coding, reuses
-  what exists, prefers native, replaces instead of piling on, runs its done-gate, and keeps
-  its guards while staying lean.
+- It **can** show, on real multi-file sessions, whether capybaraa spends fewer tokens and writes
+  less code than a bare agent while staying complete, asks before coding on an ambiguous ticket,
+  reuses what exists, and keeps its guards while staying lean.
 - It **cannot** claim production-readiness from this handful of tasks, and a deterministic safety check
-  is a floor, not a security proof. The CLARIFY tier leans on an LLM judge, made auditable but
-  still a model judging a model.
+  is a floor, not a security proof. The CLARIFY and completeness tiers lean on an LLM judge, made
+  auditable but still a model judging a model.
 
 ## Results
 
-Latest: [`../results/2026-06-26-sonnet-0.4.2.md`](../results/2026-06-26-sonnet-0.4.2.md) (Sonnet
-4.6, focused clean run, n=3); the broader [0.4.0 run](../results/2026-06-25-sonnet-0.4.0.md)
-covers the deterministic gates. Write each run up under `../results/` dated, with the per-task
-table; only paste numbers into the top-level README once you have actually run it.
+Latest: [`../results/2026-06-26-sonnet-lean.md`](../results/2026-06-26-sonnet-lean.md) (Sonnet 4.6,
+the lean-ruleset rewrite, four arms, n=2; capybaraa now spends fewer output tokens and writes less
+code than the bare agent). Earlier: the [four-arm clarify run](../results/2026-06-26-sonnet-4arm.md)
+and the broader [0.4.0 run](../results/2026-06-25-sonnet-0.4.0.md) covering the deterministic
+gates. Write each run up under `../results/` dated, with the per-task table; only paste numbers
+into the top-level README once you have actually run it.

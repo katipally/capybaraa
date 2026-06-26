@@ -35,14 +35,20 @@ MODELS = {"haiku": "claude-haiku-4-5-20251001", "sonnet": "claude-sonnet-4-6", "
 # Arms. Three kinds:
 #   bare   - the unaided agent (the fair baseline / "regular"), the only thing capybaraa is
 #            compared against
-#   plugin - capybaraa itself, loaded via --plugin-dir; `src` resolves the dir, `flag`/`level`
-#            pin its activation flag for the run (restored after)
-#   prompt - a generic system-prompt instruction via --append-system-prompt (no plugin); these
-#            are optional reference points, not part of the headline baseline-vs-capybaraa read
+#   plugin - a SessionStart-hook plugin loaded via --plugin-dir; `src` resolves the dir.
+#            capybaraa also pins `flag`/`level` so a stale "off" in the real ~/.claude can't
+#            neuter the treatment. ponytail defaults to active on load, so it has no flag and is
+#            loaded exactly the same way capybaraa loads itself.
+#   prompt - a system-prompt instruction via --append-system-prompt (`text` inline, or `textfile`
+#            read from this dir). caveman ships as a skill, not a plugin, so it is benchmarked
+#            this way (its real form), matching ponytail's own caveman control. yagni/concise are
+#            optional reference points, not part of the headline read.
 ARMS = {
     "baseline":       {"kind": "bare"},
     "regular":        {"kind": "bare"},                                   # alias for baseline
     "capybaraa":      {"kind": "plugin", "src": "capybaraa", "flag": ".capybaraa-active", "level": "on"},
+    "ponytail":       {"kind": "plugin", "src": "ponytail"},              # honest peer, loaded as a real plugin
+    "caveman":        {"kind": "prompt", "textfile": "caveman-SKILL.md"}, # prose-compression control (how it ships)
     "yagni":          {"kind": "prompt", "text": "Follow YAGNI principles."},
     "yagni-oneliner": {"kind": "prompt", "text": "Follow YAGNI principles, and prefer one-liner solutions."},
     "concise":        {"kind": "prompt", "text": "Be concise. Build the minimal thing that works and stop."},
@@ -66,21 +72,30 @@ NO_RUN_NEUTRAL = ("Respond in a single message as you normally would. Do not sta
 
 
 def _resolve_plugin(src):
-    """capybaraa -> the dev repo (override with CAPYBARAA_PLUGIN_DIR). capybaraa is the only
-    plugin arm; returns None only if the override points nowhere."""
+    """Resolve a plugin arm's dir. Order: <SRC>_PLUGIN_DIR override, then capybaraa -> this
+    dev repo, then the installed plugin cache (~/.claude/plugins/cache/<src>/<src>/<version>,
+    newest version). Returns None if nothing is found, so main() can fail that arm cleanly."""
     env = os.environ.get(f"{src.upper()}_PLUGIN_DIR")
     if env:
         return env
     if src == "capybaraa":
         return str(ROOT)
+    base = Path(os.environ.get("CLAUDE_CONFIG_DIR") or (Path.home() / ".claude")) / "plugins" / "cache" / src / src
+    if base.is_dir():
+        versions = sorted((p for p in base.iterdir() if p.is_dir()), key=lambda p: p.name)
+        if versions:
+            return str(versions[-1])
     return None
 
 
 def _arm_append(arm):
-    """The --append text for a prompt arm (None for bare/plugin arms)."""
+    """The --append text for a prompt arm (None for bare/plugin arms). `text` is inline;
+    `textfile` is read from this dir (caveman's vendored SKILL)."""
     spec = ARMS[arm]
     if spec["kind"] != "prompt":
         return None
+    if spec.get("textfile"):
+        return (Path(__file__).resolve().parent / spec["textfile"]).read_text(encoding="utf-8")
     return spec["text"]
 
 
@@ -205,7 +220,7 @@ def run_cell(task_id, arm, model, workdir: Path):
     # arms load no plugin so the flags are inert for them.
     spec = ARMS[arm]
     env = dict(os.environ)
-    if spec["kind"] == "plugin":
+    if spec["kind"] == "plugin" and spec.get("level"):
         env[f"{spec['src'].upper()}_DEFAULT_LEVEL"] = spec["level"]   # belt-and-suspenders for activation
 
     if task.get("judge_only"):
@@ -241,8 +256,9 @@ def run_cell(task_id, arm, model, workdir: Path):
     (workdir / "_result.txt").write_text(result_text, encoding="utf-8")
     ran = 1 if any(_RAN_CHECK_RE.search(c or "") for c in bash) else 0
     (workdir / "_ran_check.txt").write_text(str(ran), encoding="utf-8")
-    # activation: read this plugin arm's pinned flag back (proof the right hook fired); bare/prompt -> empty
-    if spec["kind"] == "plugin":
+    # activation: read this plugin arm's pinned flag back (proof the right hook fired); bare/prompt
+    # arms and flagless plugins (ponytail/caveman, active by default) -> empty
+    if spec["kind"] == "plugin" and spec.get("flag"):
         flag = _flag_path(spec["flag"])
         lvl = flag.read_text(encoding="utf-8").strip() if flag.exists() else ""
     else:
@@ -322,11 +338,18 @@ def aggregate(results):
         def mean(key):
             vals = [c[key] for c in cells if c.get(key) is not None]
             return round(statistics.mean(vals), 4) if vals else None
+        def total_tokens(c):
+            v = [c.get(k) for k in ("in_tokens", "out_tokens", "cache_tokens")]
+            return sum(x for x in v if x is not None) if any(x is not None for x in v) else None
+        tot = [total_tokens(c) for c in cells]
+        tot = [x for x in tot if x is not None]
         row = {"task": t, "arm": a, "model": m, "n": n,
                "pillar": TASKS[t]["pillar"],
                "src_loc_median": med("src_loc"), "src_files_median": med("src_files"),
                "wrote_tests_rate": round(sum(1 for c in cells if c.get("test_files", 0) > 0) / n, 3),
                "test_loc_median": med("test_loc"),
+               "total_tokens_mean": round(statistics.mean(tot)) if tot else None,
+               "out_tokens_mean": round(mean("out_tokens")) if mean("out_tokens") is not None else None,
                "cost_mean": mean("cost"),
                "time_s_mean": round(mean("duration_ms") / 1000, 1) if mean("duration_ms") else None}
         if TASKS[t].get("judge_only"):
@@ -436,7 +459,7 @@ def main():
     pinned = []                                            # (flag_path, original_text_or_None)
     for a in arms:
         spec = ARMS[a]
-        if spec["kind"] != "plugin":
+        if spec["kind"] != "plugin" or not spec.get("flag"):   # ponytail/caveman have no flag to pin
             continue
         fp = _flag_path(spec["flag"])
         pinned.append((fp, fp.read_text(encoding="utf-8") if fp.exists() else None))

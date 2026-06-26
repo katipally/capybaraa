@@ -49,7 +49,7 @@ medians (more runs, more cost).
 ## Caveats
 
 - Single-shot generation overstates and understates at once: it can't show the
-  clarify-first or done-gate wins, and the bare baseline often includes prose the
+  ask-first or reuse wins, and the bare baseline often includes prose the
   capybaraa prompt is told to skip, which inflates the LOC gap. Read the gap as
   directional, not precise.
 - Five tasks is a small suite. Add your own to `tasks.js` (give each a real `check`).
