@@ -3,6 +3,16 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [0.3.2] - 2026-06-26
+
+- **One-shot release script.** `npm run release -- X.Y.Z` now bumps the version in all
+  three files, runs the tests and a best-effort manifest validation, then commits, tags
+  `vX.Y.Z`, pushes `main` and the tag, and creates the GitHub Release from the changelog
+  section, all together. A tag can no longer land without its Release (the gap that left
+  0.3.0 and 0.3.1 tagged but unreleased). It refuses to run off `main`, on an existing tag,
+  or without a `## [X.Y.Z]` changelog section; `--dry-run` previews without changing
+  anything. `RELEASING.md` is updated to this flow.
+
 ## [0.3.1] - 2026-06-25
 
 - **SYNC is now the seventh pillar.** Keeping the docs, tests, comments, sibling code, and

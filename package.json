@@ -1,11 +1,12 @@
 {
   "name": "capybaraa",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Calm senior-dev mode for Claude Code: one always-on mode that clarifies before code (curated ASCII questions and edge cases), stays lean, optimal, terse, spends tokens consciously, finishes terminally, leaves the repo clean. A visible badge so you always know it is on.",
   "scripts": {
     "test": "node test/smoke.js",
-    "validate": "claude plugin validate ."
+    "validate": "claude plugin validate .",
+    "release": "node scripts/release.js"
   },
   "keywords": [
     "ai",

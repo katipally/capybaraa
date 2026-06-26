@@ -6,38 +6,38 @@ katipally/capybaraa`, and the marketplace pin follows `ref:"main"` in
 `.claude-plugin/marketplace.json`. So **a release is just a push to `main`.**
 
 ```
- edit + bump versions  ──▶  push to main  ──▶  users on the marketplace pin get it
- (optional) git tag vX.Y.Z ──▶ push tag    ──▶  a GitHub Release for the changelog
+ write CHANGELOG  ──▶  npm run release -- X.Y.Z  ──▶  bump + test + commit + push main
+                                                  └─▶  tag vX.Y.Z + push + GitHub Release
 ```
 
 ## Cut a release
 
-1. Bump the version in **both** manifests (keep them equal):
-   - `.claude-plugin/plugin.json`
-   - `.claude-plugin/marketplace.json` (the nested `plugins[0].version`)
-2. Add a dated `## [X.Y.Z]` section to `CHANGELOG.md`.
-3. Validate and test locally:
+1. Write a dated `## [X.Y.Z]` section in `CHANGELOG.md`. The script uses it as the
+   GitHub Release notes and refuses to release without it.
+2. Run the release script with the version. The `--` is required so npm forwards it:
    ```bash
-   npm test                 # node test/smoke.js
-   claude plugin validate . # manifest check (Claude Code CLI)
+   npm run release -- X.Y.Z
    ```
-4. Commit and push to `main`. Done. Marketplace users get it on their next pull.
 
-CI (`.github/workflows/ci.yml`) runs `npm test` on Node 18/20/22 and a best-effort
-manifest validation for every push and PR, so a broken plugin never lands on `main`.
+That one command does everything: bumps the version in all three files
+(`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` nested
+`plugins[0].version`, `package.json`), runs `npm test` and a best-effort
+`claude plugin validate`, then commits, tags `vX.Y.Z`, pushes `main` **and** the tag, and
+creates the GitHub Release from the changelog section. So a tag can never land without its
+Release again (the gap that left 0.3.0 and 0.3.1 tagged but unreleased).
 
-## Optional: tag a GitHub Release
-
-If you want a visible release entry with notes:
+Preview without touching anything:
 
 ```bash
-git tag vX.Y.Z
-git push origin vX.Y.Z
-gh release create vX.Y.Z --title vX.Y.Z --generate-notes
+npm run release -- X.Y.Z --dry-run
 ```
 
-Tags are cosmetic here. They don't change what marketplace users receive (that's
-driven by `ref:"main"`).
+Preflight refuses to run off `main`, on an existing tag, or without a changelog section.
+Needs `gh` authed for the Release step. CI (`.github/workflows/ci.yml`) re-runs `npm test`
+on Node 18/20/22 for every push, so a broken plugin never lands on `main`.
+
+Marketplace users get the new version on their next pull regardless of the Release (the
+pin follows `ref:"main"`); the Release is the visible changelog entry.
 
 ## Optional: official Claude Code marketplace
 
